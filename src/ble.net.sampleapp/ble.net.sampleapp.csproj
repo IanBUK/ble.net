@@ -9,17 +9,13 @@
    </PropertyGroup>
 
    <ItemGroup>
-    <PackageReference Include="Acr.UserDialogs">
-      <Version>6.5.1</Version>
+    <PackageReference Include="Acr.UserDialogs" Version="6.5.1">
     </PackageReference>
-    <PackageReference Include="ble.net">
-      <Version>1.2.1</Version>
+    <PackageReference Include="ble.net" Version="1.2.1">
     </PackageReference>
-    <PackageReference Include="nexus.core">
-      <Version>0.34.0</Version>
+    <PackageReference Include="nexus.core" Version="0.34.0">
     </PackageReference>
-    <PackageReference Include="Xamarin.Forms">
-      <Version>2.5.1.527436</Version>
+    <PackageReference Include="Xamarin.Forms" Version="5.0.0.2545">
     </PackageReference>
   </ItemGroup>
 
