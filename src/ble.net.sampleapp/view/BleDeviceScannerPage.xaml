@@ -42,6 +42,47 @@
                     Toggled="Switch_OnToggled" />
          </StackLayout>
       </StackLayout>
+<!--      <ListView ItemsSource="{Binding Messages}"
+                ItemTapped="ListView_OnItemTapped"
+                ItemSelected="ListView_OnItemSelected"
+                HasUnevenRows="True"
+                SeparatorColor="#aaaaaa"
+                VerticalOptions="FillAndExpand"
+                HorizontalOptions="FillAndExpand">
+         <ListView.SeparatorVisibility>
+            <OnPlatform x:TypeArguments="SeparatorVisibility"
+                        Android="None"
+                        iOS="Default"
+                        WinPhone="Default" />
+         </ListView.SeparatorVisibility>
+         <ListView.ItemTemplate>
+            <DataTemplate>
+               <ViewCell>
+                  <Frame Margin="{StaticResource GridPadding}"
+                         Padding="{StaticResource GridPadding}">
+
+                     <Grid RowSpacing="5">
+                        <Grid.ColumnDefinitions>
+                           <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                           <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <Label Grid.Column="0"
+                               Grid.Row="0"
+                               Text="Address / Name"
+                               FontAttributes="Bold" />
+
+                        <Label Grid.Column="0"
+                               Grid.Row="1"
+                               Text="{Binding Message}" />
+                        </Grid>
+                     </Frame>
+               </ViewCell>
+               </DataTemplate>
+            </ListView.ItemTemplate>
+      </ListView> -->
+
 
       <ListView ItemsSource="{Binding FoundDevices}"
                 ItemTapped="ListView_OnItemTapped"

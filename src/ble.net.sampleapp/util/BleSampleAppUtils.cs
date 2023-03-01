@@ -10,8 +10,8 @@ namespace ble.net.sampleapp.util
 {
    internal static class BleSampleAppUtils
    {
-      public const Int32 SCAN_SECONDS_DEFAULT = 10;
-      public const Int32 SCAN_SECONDS_MAX = 30;
+      public const Int32 SCAN_SECONDS_DEFAULT = 60;
+      public const Int32 SCAN_SECONDS_MAX = 60;
 
       public static Double ClampSeconds( Double seconds )
       {

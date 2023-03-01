@@ -26,23 +26,53 @@ namespace nexus.protocols.ble.scan.advertisement
       /// </summary>
       internal static IBlePeripheral AsUndirectedAdvertisement( this AdvertisingChannelPdu pdu, Int32 rssi = 0 )
       {
-         if(pdu.Type.CanCarryPayload() && pdu.payload.Length >= 6)
+         try
          {
-            var deviceGuid = new Byte[16];
-            var address = pdu.payload.Slice( 0, 6 );
-            address.CopyTo( deviceGuid, 10 );
-            return new BlePeripheral(
-               type: pdu.Type,
-               guid: new Guid( deviceGuid ),
-               address: address,
-               addressIsRandom: pdu.TxAdd,
-               advertising: ParseAdvertisingPayloadData(
-                  pdu.payload.Length > 6 ? pdu.payload.Slice( 7 ) : new Byte[] { } ),
-               rssi: rssi );
+            Log.Trace($"into BleAdvertisingUtils.AsUndirectedAdvertisement");
+            if (pdu.Type.CanCarryPayload() && pdu.payload.Length >= 6)
+            {
+               Log.Trace($"    into pdu.Type.CanCarryPayload");
+               var deviceGuid = new Byte[16];
+               var address = pdu.payload.Slice(0, 6);
+               address.CopyTo(deviceGuid, 10);
+               return new BlePeripheral(
+                  type: pdu.Type,
+                  guid: new Guid(deviceGuid),
+                  address: address,
+                  addressIsRandom: pdu.TxAdd,
+                  advertising: ParseAdvertisingPayloadData(
+                     pdu.payload.Length > 6 ? DoSlice(pdu.payload, 7)
+                     : new Byte[] { }),
+                  rssi: rssi);
+            }
+         }
+         catch (Exception e)
+         {
+            Log.Trace($"Exception in AsUndirectedAdvertisement: {e.Message}.");
          }
 
          return null;
       }
+
+      internal static byte[] DoSlice(byte[] payload, int sliceSize)
+      {
+         var result = new Byte[] { };
+         try
+         {
+            result = payload.Slice(sliceSize);
+         }
+         catch (Exception e)
+         {
+            Log.Trace($"Exception in DoSlice: {e.Message}.");
+         }
+
+         return result;
+
+      }
+
+
+
+
 
       /// <summary>
       /// Syntax sugar for
@@ -79,9 +109,16 @@ namespace nexus.protocols.ble.scan.advertisement
                }
 
                var type = advD[index];
-               var data = advD.Slice( index + 1, index + length );
-               index += length;
-               records.Add( new AdvertisingDataItem( (AdvertisingDataType)type, data ) );
+               try
+               {
+                  var data = advD.Slice(index + 1, index + length);
+                  index += length;
+                  records.Add(new AdvertisingDataItem((AdvertisingDataType)type, data));
+               }
+               catch (Exception e)
+               {
+                     Log.Trace($"Exception in ParseAdvertisingPayloadData: {e.Message}.");
+               }
             }
          }
 
@@ -105,6 +142,7 @@ namespace nexus.protocols.ble.scan.advertisement
                                  IEnumerable<AdvertisingDataItem> advertising, Int32 rssi )
             : base( guid, address, addressIsRandom )
          {
+            Log.Trace($"BlePeripheral created");
             Type = type;
             //Advertisement = new BleAdvertisement();
             Rssi = rssi;

@@ -5,6 +5,7 @@
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
@@ -30,6 +31,7 @@ namespace ble.net.sampleapp.viewmodel
       {
          m_onSelectDevice = onSelectDevice;
          FoundDevices = new ObservableCollection<BlePeripheralViewModel>();
+         Log.Trace($"bleAdapter: {bleAdapter.CurrentState.Value}");
          ScanForDevicesCommand =
             new Command( x => { StartScan( x as Double? ?? BleSampleAppUtils.SCAN_SECONDS_DEFAULT ); } );
       }
@@ -48,8 +50,11 @@ namespace ble.net.sampleapp.viewmodel
             return;
          }
 
+         Log.Trace($"start scan, for {seconds} seconds");
+
          if(!IsAdapterEnabled)
          {
+            Log.Trace("Bluetooth is disabled, cannnot scan.");
             m_dialogs.Toast( "Cannot start scan, Bluetooth is turned off" );
             return;
          }
@@ -61,13 +66,14 @@ namespace ble.net.sampleapp.viewmodel
          m_scanStopTime = DateTime.UtcNow.AddSeconds( seconds );
 
          Log.Trace( "Beginning device scan. timeout={0} seconds", seconds );
-
+         Log.Trace($"Begining device scan, timeout = {seconds} seconds");
          RaisePropertyChanged( nameof(ScanTimeRemaining) );
          // RaisePropertyChanged of ScanTimeRemaining while scan is running
          Device.StartTimer(
             TimeSpan.FromSeconds( 1 ),
             () =>
             {
+               Log.Trace($"Tick. time remaining: {ScanTimeRemaining} seconds");
                RaisePropertyChanged( nameof(ScanTimeRemaining) );
                return IsScanning;
             } );
@@ -88,22 +94,34 @@ namespace ble.net.sampleapp.viewmodel
             //    },
             peripheral =>
             {
+               Log.Trace($"Into peripheral =>");
                Device.BeginInvokeOnMainThread(
                   () =>
                   {
-                     var existing = FoundDevices.FirstOrDefault( d => d.Equals( peripheral ) );
-                     if(existing != null)
+                     try
                      {
-                        existing.Update( peripheral );
+                        Log.Trace($"Device pinged. {peripheral.DeviceId}");
+                        var existing = FoundDevices.FirstOrDefault(d => d.Equals(peripheral));
+                        if (existing != null)
+                        {
+                           Log.Trace($"update existing peripheral {peripheral.DeviceId}");
+
+                           existing.Update(peripheral);
+                        }
+                        else
+                        {
+                           Log.Trace($"found new peripheral: {peripheral.DeviceId}");
+                           FoundDevices.Add(new BlePeripheralViewModel(peripheral, m_onSelectDevice));
+                        }
                      }
-                     else
+                     catch (Exception e)
                      {
-                        FoundDevices.Add( new BlePeripheralViewModel( peripheral, m_onSelectDevice ) );
+                        Log.Trace($"exception in Device.BeginEvokeOnMainThread: {e.Message}");
                      }
                   } );
             },
             m_scanCancel.Token );
-
+         Log.Trace("scanning complete");
          IsScanning = false;
       }
    }

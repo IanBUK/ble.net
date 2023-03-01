@@ -60,7 +60,7 @@ namespace ble.net.sampleapp.viewmodel
             var list = services?.ToList();
             if(list != null)
             {
-               //Log.Trace( "Discovered chars={0}", list.Select( g => g.ToString() ).Join( "," ) );
+               Log.Trace( "Discovered chars={0}", list.Select( g => g.ToString() ).Join( "," ) );
                foreach(var c in list)
                {
                   var vm = new BleGattCharacteristicViewModel( m_serviceGuid, c, m_gattServer, m_dialogManager );

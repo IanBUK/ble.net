@@ -218,7 +218,8 @@ namespace nexus.protocols.ble
          [NotNull] this IBluetoothLowEnergyAdapter adapter, ScanSettings settings, CancellationToken ct,
          IProgress<ConnectionProgress> progress = null )
       {
-         if(settings.Filter == null)
+         Log.Trace($"Into FindAndConnectToDevice");
+         if (settings.Filter == null)
          {
             throw new ArgumentNullException(
                nameof(settings),
@@ -269,7 +270,9 @@ namespace nexus.protocols.ble
          [NotNull] this IBluetoothLowEnergyAdapter adapter, [NotNull] IScanFilter filter, CancellationToken ct,
          IProgress<ConnectionProgress> progress = null )
       {
-         if(filter == null)
+         Log.Trace($"11. FindAndConnectToDevice.  adapter == null? {adapter == null}. Filter.AdvertisedDeviceName: '{filter.AdvertisedDeviceName}', AdvertisedManufacturerCompanyId: '{filter.AdvertisedManufacturerCompanyId}',  AdvertisedServiceIsInList:'{filter.AdvertisedServiceIsInList}'");
+
+         if (filter == null)
          {
             throw new ArgumentNullException( nameof(filter) );
          }
@@ -297,7 +300,11 @@ namespace nexus.protocols.ble
       public static Task ScanForBroadcasts( [NotNull] this IBluetoothLowEnergyAdapter adapter,
                                             Action<IBlePeripheral> advertisementDiscovered, CancellationToken ct )
       {
-         if(adapter == null)
+         Log.Trace($"10. ScanForBroadcasts.  adapter == null? {adapter == null}.");
+         //Log.Trace($"advertisementDiscovered: '{advertisementDiscovered.GetType().Name}");
+
+
+         if (adapter == null)
          {
             throw new ArgumentNullException( nameof(adapter) );
          }
@@ -318,7 +325,10 @@ namespace nexus.protocols.ble
                                             IObserver<IBlePeripheral> advertisementDiscovered,
                                             TimeSpan? timeout = null )
       {
-         if(adapter == null)
+         Log.Trace($"9. ScanForBroadcasts.  adapter == null? {adapter == null}.");
+         //Log.Trace($"advertisementDiscovered: '{advertisementDiscovered.GetType().Name}");
+
+         if (adapter == null)
          {
             throw new ArgumentNullException( nameof(adapter) );
          }
@@ -340,7 +350,10 @@ namespace nexus.protocols.ble
       public static Task ScanForBroadcasts( [NotNull] this IBluetoothLowEnergyAdapter adapter,
                                             Action<IBlePeripheral> advertisementDiscovered, TimeSpan? timeout = null )
       {
-         if(adapter == null)
+         Log.Trace($"8. ScanForBroadcasts.  adapter == null? {adapter == null}.");
+         //Log.Trace($"advertisementDiscovered: '{advertisementDiscovered.GetType().Name}");
+
+         if (adapter == null)
          {
             throw new ArgumentNullException( nameof(adapter) );
          }
@@ -362,7 +375,14 @@ namespace nexus.protocols.ble
                                             ScanSettings scanSettings, Action<IBlePeripheral> advertisementDiscovered,
                                             CancellationToken ct )
       {
-         if(adapter == null)
+         Log.Trace($"7. ScanForBroadcasts.  adapter == null?\");// {adapter == null}. scanSettings.Mode: '{scanSettings.Mode}', scanSettings: '{scanSettings.IgnoreRepeatBroadcasts}'");
+     //    Log.Trace($"advertisementDiscovered: '{advertisementDiscovered.GetType().Name}");
+         if (adapter == null)
+         {
+            throw new ArgumentNullException(nameof(adapter));
+         }
+
+         if (adapter == null)
          {
             throw new ArgumentNullException( nameof(adapter) );
          }
@@ -388,7 +408,9 @@ namespace nexus.protocols.ble
                                             IObserver<IBlePeripheral> advertisementDiscovered,
                                             TimeSpan? timeout = null )
       {
-         if(adapter == null)
+         Log.Trace($"6. ScanForBroadcasts.  adapter == null? {adapter == null}. \");//scanSettings.Mode: '{scanSettings.Mode}', scanSettings: '{scanSettings.IgnoreRepeatBroadcasts}'");
+       //  Log.Trace($"advertisementDiscovered: '{advertisementDiscovered.GetType().Name}");
+         if (adapter == null)
          {
             throw new ArgumentNullException( nameof(adapter) );
          }
@@ -416,7 +438,9 @@ namespace nexus.protocols.ble
                                             ScanSettings scanSettings, Action<IBlePeripheral> advertisementDiscovered,
                                             TimeSpan? timeout = null )
       {
-         if(adapter == null)
+         Log.Trace($"5. ScanForBroadcasts.  adapter == null? {adapter == null}.\");// Filter.AdvertisedDeviceName: '{filter.AdvertisedDeviceName}', AdvertisedManufacturerCompanyId: '{filter.AdvertisedManufacturerCompanyId}',  AdvertisedServiceIsInList:'{filter.AdvertisedServiceIsInList}'");
+        // Log.Trace($"advertisementDiscovered: '{advertisementDiscovered.Method.Name}");
+         if (adapter == null)
          {
             throw new ArgumentNullException( nameof(adapter) );
          }
@@ -437,7 +461,8 @@ namespace nexus.protocols.ble
       public static Task ScanForBroadcasts( [NotNull] this IBluetoothLowEnergyAdapter adapter, IScanFilter filter,
                                             IObserver<IBlePeripheral> advertisementDiscovered, CancellationToken ct )
       {
-         if(adapter == null)
+         Log.Trace($"4. ScanForBroadcasts.  adapter == null? {adapter == null}. \");//Filter.AdvertisedDeviceName: '{filter.AdvertisedDeviceName}', AdvertisedManufacturerCompanyId: '{filter.AdvertisedManufacturerCompanyId}',  AdvertisedServiceIsInList:'{filter.AdvertisedServiceIsInList}'");
+         //Log.Trace($"advertisementDiscovered: '{advertisementDiscovered.GetType().Name}"); if (adapter == null)
          {
             throw new ArgumentNullException( nameof(adapter) );
          }
@@ -458,7 +483,9 @@ namespace nexus.protocols.ble
       public static Task ScanForBroadcasts( [NotNull] this IBluetoothLowEnergyAdapter adapter, IScanFilter filter,
                                             Action<IBlePeripheral> advertisementDiscovered, CancellationToken ct )
       {
-         if(adapter == null)
+         Log.Trace($"3. ScanForBroadcasts.  adapter == null? {adapter == null}. \");//Filter.AdvertisedDeviceName: '{filter.AdvertisedDeviceName}', AdvertisedManufacturerCompanyId: '{filter.AdvertisedManufacturerCompanyId}',  AdvertisedServiceIsInList:'{filter.AdvertisedServiceIsInList}'");
+         //Log.Trace($"advertisementDiscovered: '{advertisementDiscovered.Method.Name}");
+         if (adapter == null)
          {
             throw new ArgumentNullException( nameof(adapter) );
          }
@@ -484,7 +511,9 @@ namespace nexus.protocols.ble
                                             IObserver<IBlePeripheral> advertisementDiscovered,
                                             TimeSpan? timeout = null )
       {
-         if(adapter == null)
+         Log.Trace($"2. ScanForBroadcasts.  adapter == null? {adapter == null}.\");// Filter.AdvertisedDeviceName: '{filter.AdvertisedDeviceName}', AdvertisedManufacturerCompanyId: '{filter.AdvertisedManufacturerCompanyId}',  AdvertisedServiceIsInList:'{filter.AdvertisedServiceIsInList}'");
+         //Log.Trace($"advertisementDiscovered: '{advertisementDiscovered.GetType().Name}");
+         if (adapter == null)
          {
             throw new ArgumentNullException( nameof(adapter) );
          }
@@ -512,6 +541,8 @@ namespace nexus.protocols.ble
       public static Task ScanForBroadcasts( [NotNull] this IBluetoothLowEnergyAdapter adapter, IScanFilter filter,
                                             Action<IBlePeripheral> advertisementDiscovered, TimeSpan? timeout = null )
       {
+         Log.Trace($"1. ScanForBroadcasts.  adapter == null? {adapter == null}.");// Filter.AdvertisedDeviceName: '{filter.AdvertisedDeviceName}', AdvertisedManufacturerCompanyId: '{filter.AdvertisedManufacturerCompanyId}',  AdvertisedServiceIsInList:'{filter.AdvertisedServiceIsInList}'");
+         //Log.Trace($"advertisementDiscovered: '{advertisementDiscovered.Method.Name}");
          if(adapter == null)
          {
             throw new ArgumentNullException( nameof(adapter) );

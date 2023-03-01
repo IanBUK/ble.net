@@ -166,6 +166,7 @@ namespace ble.net.sampleapp.viewmodel
             }
 
             Log.Info( errorMsg );
+            Log.Trace(errorMsg);
             m_dialogManager.Toast( errorMsg, TimeSpan.FromSeconds( 5 ) );
          }
 

@@ -36,6 +36,7 @@ namespace ble.net.sampleapp
 
          var bleAssembly = adapter.GetType().GetTypeInfo().Assembly.GetName();
          Log.Info( bleAssembly.Name + "@" + bleAssembly.Version );
+         Log.Trace(bleAssembly.Name + "@" + bleAssembly.Version);
 
          var bleGattServerViewModel = new BleGattServerViewModel( dialogs, adapter );
          var bleScanViewModel = new BleDeviceScannerViewModel(

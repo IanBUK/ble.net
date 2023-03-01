@@ -7,6 +7,7 @@
 using System;
 using System.Runtime.InteropServices;
 using nexus.core;
+using nexus.core.logging;
 
 namespace nexus.protocols.ble.scan.advertisement.link
 {
@@ -33,7 +34,14 @@ namespace nexus.protocols.ble.scan.advertisement.link
          {
             if(pduAndCrc != null && pduAndCrc.Length > 3)
             {
-               return pduAndCrc.Slice( 0, pduAndCrc.Length - 3 );
+               try
+               {
+                  return pduAndCrc.Slice( 0, pduAndCrc.Length - 3 );
+               }
+               catch (Exception e)
+               {
+                  Log.Trace($"Exception in Pdu: {e.Message}.");
+               }
             }
             return new Byte[0];
          }
@@ -48,7 +56,15 @@ namespace nexus.protocols.ble.scan.advertisement.link
          {
             if(pduAndCrc != null && pduAndCrc.Length > 3)
             {
-               return pduAndCrc.Slice( pduAndCrc.Length - 4 );
+               try
+               {
+                  return pduAndCrc.Slice( pduAndCrc.Length - 4 );
+               }
+               catch (Exception e)
+               {
+                  Log.Trace($"Exception in Crc: {e.Message}.");
+               }
+
             }
             return new Byte[3];
          }
@@ -59,14 +75,24 @@ namespace nexus.protocols.ble.scan.advertisement.link
       /// </summary>
       public AdvertisingChannelPdu PduAsAdvertisement()
       {
-         if(!this.IsAdvertisingChannelPDU())
+         try
          {
-            return default(AdvertisingChannelPdu);
+            if (!this.IsAdvertisingChannelPDU())
+            {
+               return default(AdvertisingChannelPdu);
+            }
+
+            var pdu = Pdu;
+            // TODO: Can I just memory map the byte array into a AdvertisingChannelPDU struct?
+            return new AdvertisingChannelPdu { header = (UInt16)pdu.Slice(0, 2).ToInt16(), payload = pdu.Slice(3) };
+         }
+         catch (Exception e)
+         {
+            Log.Trace($"Exception in PduAsAdvertisement: {e.Message}.");
          }
 
-         var pdu = Pdu;
-         // TODO: Can I just memory map the byte array into a AdvertisingChannelPDU struct?
-         return new AdvertisingChannelPdu {header = (UInt16)pdu.Slice( 0, 2 ).ToInt16(), payload = pdu.Slice( 3 )};
+         return new AdvertisingChannelPdu();
+
       }
    }
 }
