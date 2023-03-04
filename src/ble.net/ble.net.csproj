@@ -7,7 +7,9 @@
    </PropertyGroup>
 
    <ItemGroup>
-      <PackageReference Include="nexus.core" Version="0.36.6" />
+     <PackageReference Include="nexus.core">
+       <Version>0.34.0</Version>
+     </PackageReference>
    </ItemGroup>
 
 </Project>

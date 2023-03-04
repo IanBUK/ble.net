@@ -106,9 +106,6 @@
     <PackageReference Include="ble.net-android">
       <Version>1.2.1</Version>
     </PackageReference>
-    <PackageReference Include="nexus.core">
-      <Version>0.36.6</Version>
-    </PackageReference>
     <PackageReference Include="Xamarin.Forms">
       <Version>5.0.0.2545</Version>
     </PackageReference>

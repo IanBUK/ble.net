@@ -13,8 +13,7 @@
     </PackageReference>
     <PackageReference Include="ble.net" Version="1.2.1">
     </PackageReference>
-    <PackageReference Include="nexus.core" Version="0.36.6">
-    </PackageReference>
+    <PackageReference Include="nexus.core" Version="0.34.0" />
     <PackageReference Include="Xamarin.Forms" Version="5.0.0.2545">
     </PackageReference>
   </ItemGroup>

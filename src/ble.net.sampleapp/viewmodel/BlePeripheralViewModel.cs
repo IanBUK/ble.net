@@ -44,6 +44,13 @@ namespace ble.net.sampleapp.viewmodel
                : x.ToString() + " (" + name + ")";
          } ).Join( ", " );
 
+      public string AccelerometerData => "acc X,Y,Z";
+
+      public string MagnetometerData => "mag X,Y,Z";
+
+      public string GyroScopeData => "gyro X,Y,Z";
+
+
       public String Advertisement => Model.Advertisement.ToString();
 
       public ICommand ConnectToDeviceCommand { get; }

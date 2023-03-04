@@ -94,24 +94,28 @@ namespace ble.net.sampleapp.viewmodel
             //    },
             peripheral =>
             {
-               Log.Trace($"Into peripheral =>");
+               //Log.Trace($"Into peripheral =>");
                Device.BeginInvokeOnMainThread(
                   () =>
                   {
                      try
                      {
-                        Log.Trace($"Device pinged. {peripheral.DeviceId}");
-                        var existing = FoundDevices.FirstOrDefault(d => d.Equals(peripheral));
-                        if (existing != null)
+                        if (IsRHBSensor(peripheral))
                         {
-                           Log.Trace($"update existing peripheral {peripheral.DeviceId}");
+                           //Log.Trace($"RHB Device pinged. {peripheral.Advertisement.DeviceName}");
+                           var existing = FoundDevices.FirstOrDefault(d => d.Equals(peripheral));
+                           if (existing != null)
+                           {
+                              //Log.Trace($"update existing peripheral {peripheral.Advertisement.DeviceName}");
 
-                           existing.Update(peripheral);
-                        }
-                        else
-                        {
-                           Log.Trace($"found new peripheral: {peripheral.DeviceId}");
-                           FoundDevices.Add(new BlePeripheralViewModel(peripheral, m_onSelectDevice));
+                              existing.Update(peripheral);
+                              //Log.Trace($"updated device '{peripheral.Advertisement.DeviceName}' service data: '{existing.ServiceData}'");
+                           }
+                           else
+                           {
+                              Log.Trace($"found new peripheral: {peripheral.Advertisement.DeviceName}");
+                              FoundDevices.Add(new BlePeripheralViewModel(peripheral, m_onSelectDevice));
+                           }
                         }
                      }
                      catch (Exception e)
@@ -123,6 +127,16 @@ namespace ble.net.sampleapp.viewmodel
             m_scanCancel.Token );
          Log.Trace("scanning complete");
          IsScanning = false;
+      }
+
+      private bool IsRHBSensor(IBlePeripheral peripheral)
+      {
+         //return true;
+         if (peripheral == null || peripheral.Advertisement == null || string.IsNullOrEmpty(peripheral.Advertisement.DeviceName) )
+         {
+            return false;
+         }
+         return peripheral.Advertisement.DeviceName.StartsWith("RHB");
       }
    }
 }
