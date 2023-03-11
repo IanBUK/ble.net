@@ -135,6 +135,7 @@
                            <ColumnDefinition Width="Auto" />
                            <ColumnDefinition Width="Auto" />
                            <ColumnDefinition Width="Auto" />
+                           <ColumnDefinition Width="Auto" />
                            <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
                         <Grid.RowDefinitions>
@@ -152,14 +153,33 @@
                                Grid.Row="0"
                                Text="Address / Name"
                                FontAttributes="Bold" />
-                        <Label Grid.Column="0"
-                               Grid.Row="1"
+                        <Label Grid.Column="2"
+                               Grid.Row="0"
                                Text="RSSI / Tx"
                                FontAttributes="Bold" />
+
+                        <Label Grid.Column="0"
+                               Grid.Row="1"
+                               Text="Last Ping"
+                               FontAttributes="Bold" />
+                        <Label Grid.Column="2"
+                               Grid.Row="1"
+                               Text="ms Between Pings"
+                               FontAttributes="Bold" />
+
                         <Label Grid.Column="0"
                                Grid.Row="2"
                                Text="Flags"
                                FontAttributes="Bold" />
+
+                        <Label Grid.Column="2"
+                               Grid.Row="2"
+                               Text="Battery"
+                               FontAttributes="Bold" />
+
+
+
+
                         <Label Grid.Column="0"
                                Grid.Row="3"
                                Text="Mfg. Data"
@@ -190,9 +210,21 @@
                         <Label Grid.Column="1"
                                Grid.Row="0"
                                Text="{Binding AddressAndName}" />
+                        <Label Grid.Column="3"
+                               Grid.Row="0"
+                               Text="{Binding Signal}" />
+
                         <Label Grid.Column="1"
                                Grid.Row="1"
-                               Text="{Binding Signal}" />
+                               Text="{Binding LastPing}" />
+                        <Label Grid.Column="3"
+                               Grid.Row="1"
+                               Text="{Binding MsSinceLastPing}" />
+
+                        <Label Grid.Column="3"
+                               Grid.Row="2"
+                               Text="{Binding BatteryLevel}" />
+
                         <Label Grid.Column="1"
                                Grid.Row="2"
                                Text="{Binding Flags}" />
@@ -207,18 +239,18 @@
                                Text="{Binding ServiceData}" />
                         <Label Grid.Column="1"
                                Grid.Row="6"
-                               Text="{Binding AccelerometerData}" />
+                               Text="{Binding AccelerometerSummary}" />
                         <Label Grid.Column="3"
                                Grid.Row="6"
-                               Text="{Binding GyroScopeData}" />
+                               Text="{Binding GyroScopeSummary}" />
                         <Label Grid.Column="5"
                                Grid.Row="6"
-                               Text="{Binding MagnetometerData}" />
-                        <StackLayout Grid.Row="7"
-                                     Grid.Column="0"
-                                     Grid.ColumnSpan="2"
+                               Text="{Binding MagnetometerSummary}" />
+                        <StackLayout Grid.Row="6"
+                                     Grid.Column="6"
+                                     Grid.ColumnSpan="1"
                                      Orientation="Horizontal"
-                                     HorizontalOptions="FillAndExpand">
+                                     HorizontalOptions="EndAndExpand">
                            <!-- TODO: implement the remember switch -->
                            <Label IsVisible="false"
                                   Text="Remember Device"
