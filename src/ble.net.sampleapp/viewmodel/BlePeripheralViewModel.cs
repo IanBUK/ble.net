@@ -34,6 +34,7 @@ namespace ble.net.sampleapp.viewmodel
       private Vector3D _mag = new Vector3D();
       private Vector3D _orientation = new Vector3D();
       private int _batteryLevel = 0;
+      private double _msSinceLastPing = 0.0;
 
       const int NEG_BIT_ORIENTATION_X = 1;
       const int NEG_BIT_ORIENTATION_Y = 2;
@@ -71,7 +72,7 @@ namespace ble.net.sampleapp.viewmodel
 
       public DateTime LastPing { get; set; }
 
-      public double MsSinceLastPing { get; set; }
+      public double MsSinceLastPing => _msSinceLastPing;
 
       public String Address => Model.Address != null && Model.Address.Length > 0
          ? Model.Address.Select( b => b.EncodeToBase16String() ).Join( ":" )
@@ -138,9 +139,12 @@ namespace ble.net.sampleapp.viewmodel
 
       public Int32 Rssi => Model.Rssi;
 
+      // public String ServiceData => Model.Advertisement?.ServiceData
+      //    .Select( x => x.Key + "=0x" + x.Value?.ToArray()?.EncodeToBase16String() )
+      //    .Join( ", " );
       public String ServiceData => Model.Advertisement?.ServiceData
-                                        .Select( x => x.Key + "=0x" + x.Value?.ToArray()?.EncodeToBase16String() )
-                                        .Join( ", " );
+         .Select( x => x.Key + " = " + ByteArrayToString(x.Value?.ToArray()) )
+         .Join( ", " );
 
       public String Signal => Model.Rssi + " / " + Model.Advertisement.TxPowerLevel;
 
@@ -241,10 +245,15 @@ namespace ble.net.sampleapp.viewmodel
       }
       private static string ByteArrayToString(byte[] ba)
       {
-         var hex = new StringBuilder(ba.Length * 2);
-         foreach (byte b in ba)
-            hex.AppendFormat("{0:x2}", b);
-         return hex.ToString();
+         if (ba != null)
+         {
+            var hex = new StringBuilder(ba.Length * 2);
+            foreach (byte b in ba)
+               hex.AppendFormat("{0:x2}", b);
+            return hex.ToString();
+         }
+
+         return string.Empty;
       }
 
       public void Update(IBlePeripheral model)
@@ -254,9 +263,12 @@ namespace ble.net.sampleapp.viewmodel
             Model = model;
          }
 
-        /* LastPing = DateTime.Now;
-         MsSinceLastPing = DateTime.Now.Subtract(LastPing).TotalMilliseconds;
-         //InterpretMessage();*/
+         var now = DateTime.Now;
+         _msSinceLastPing = now.Subtract(LastPing).TotalMilliseconds;
+         LastPing = now;
+         Log.Debug($"time since last ping {MsSinceLastPing}");
+         // MsSinceLastPing = DateTime.Now.Subtract(LastPing).TotalMilliseconds;
+          //InterpretMessage();*/
          RefreshBatteryLevel();
 
          RaisePropertyChanged(nameof(Address));
@@ -275,6 +287,7 @@ namespace ble.net.sampleapp.viewmodel
          RaisePropertyChanged(nameof(TxPowerLevel));
 
          RaisePropertyChanged(nameof(BatteryLevel));
+         RaisePropertyChanged(nameof(MsSinceLastPing));
 
 
 /*

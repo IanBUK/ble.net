@@ -102,6 +102,7 @@ namespace ble.net.sampleapp.viewmodel
                      {
                         if (IsRHBSensor(peripheral))
                         {
+                           Log.Debug($"pinged device of type {peripheral.GetType().Name}");
                            //Log.Trace($"RHB Device pinged. {peripheral.Advertisement.DeviceName}");
                            var existing = FoundDevices.FirstOrDefault(d => d.Equals(peripheral));
                            if (existing != null)
@@ -136,6 +137,7 @@ namespace ble.net.sampleapp.viewmodel
          {
             return false;
          }
+
          return peripheral.Advertisement.DeviceName.StartsWith("RHB");
       }
    }
