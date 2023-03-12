@@ -43,7 +43,7 @@ namespace ble.net.sampleapp.viewmodel
       public Int32 ScanTimeRemaining =>
          (Int32)BleSampleAppUtils.ClampSeconds( (m_scanStopTime - DateTime.UtcNow).TotalSeconds );
 
-      private async void StartScan( Double seconds )
+      private async void StartScan( double seconds )
       {
          if(IsScanning)
          {
@@ -54,7 +54,7 @@ namespace ble.net.sampleapp.viewmodel
 
          if(!IsAdapterEnabled)
          {
-            Log.Trace("Bluetooth is disabled, cannnot scan.");
+            Log.Trace("Bluetooth is disabled, cannot scan.");
             m_dialogs.Toast( "Cannot start scan, Bluetooth is turned off" );
             return;
          }
@@ -66,7 +66,7 @@ namespace ble.net.sampleapp.viewmodel
          m_scanStopTime = DateTime.UtcNow.AddSeconds( seconds );
 
          Log.Trace( "Beginning device scan. timeout={0} seconds", seconds );
-         Log.Trace($"Begining device scan, timeout = {seconds} seconds");
+         Log.Trace($"Beginning device scan, timeout = {seconds} seconds");
          RaisePropertyChanged( nameof(ScanTimeRemaining) );
          // RaisePropertyChanged of ScanTimeRemaining while scan is running
          Device.StartTimer(
@@ -100,23 +100,15 @@ namespace ble.net.sampleapp.viewmodel
                   {
                      try
                      {
-                        if (IsRHBSensor(peripheral))
+                        if (!IsRhbSensor(peripheral)) return;
+                        var existing = FoundDevices.FirstOrDefault(d => d.Equals(peripheral));
+                        if (existing != null)
                         {
-                           Log.Debug($"pinged device of type {peripheral.GetType().Name}");
-                           //Log.Trace($"RHB Device pinged. {peripheral.Advertisement.DeviceName}");
-                           var existing = FoundDevices.FirstOrDefault(d => d.Equals(peripheral));
-                           if (existing != null)
-                           {
-                              //Log.Trace($"update existing peripheral {peripheral.Advertisement.DeviceName}");
-
-                              existing.Update(peripheral);
-                              //Log.Trace($"updated device '{peripheral.Advertisement.DeviceName}' service data: '{existing.ServiceData}'");
-                           }
-                           else
-                           {
-                              Log.Trace($"found new peripheral: {peripheral.Advertisement.DeviceName}");
-                              FoundDevices.Add(new BlePeripheralViewModel(peripheral, m_onSelectDevice));
-                           }
+                           existing.Update(peripheral);
+                        }
+                        else
+                        {
+                           FoundDevices.Add(new BlePeripheralViewModel(peripheral, m_onSelectDevice));
                         }
                      }
                      catch (Exception e)
@@ -126,18 +118,15 @@ namespace ble.net.sampleapp.viewmodel
                   } );
             },
             m_scanCancel.Token );
-         Log.Trace("scanning complete");
          IsScanning = false;
       }
 
-      private bool IsRHBSensor(IBlePeripheral peripheral)
+      private static bool IsRhbSensor(IBlePeripheral peripheral)
       {
-         //return true;
-         if (peripheral == null || peripheral.Advertisement == null || string.IsNullOrEmpty(peripheral.Advertisement.DeviceName) )
+         if (peripheral?.Advertisement == null || string.IsNullOrEmpty(peripheral.Advertisement.DeviceName) )
          {
             return false;
          }
-
          return peripheral.Advertisement.DeviceName.StartsWith("RHB");
       }
    }

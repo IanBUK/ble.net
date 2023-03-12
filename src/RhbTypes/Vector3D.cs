@@ -1,4 +1,4 @@
-namespace ble.net.sampleapp
+namespace RhbTypes
 {
    public class Vector3D
    {
@@ -8,9 +8,9 @@ namespace ble.net.sampleapp
          Y = 0.0F;
          Z = 0.0F;
       }
-      public float X;
-      public float Y;
-      public float Z;
+      public double X;
+      public double Y;
+      public double Z;
 
       public override string ToString()
       {

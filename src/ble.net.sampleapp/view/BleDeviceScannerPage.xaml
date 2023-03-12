@@ -136,6 +136,8 @@
                            <ColumnDefinition Width="Auto" />
                            <ColumnDefinition Width="Auto" />
                            <ColumnDefinition Width="Auto" />
+                           <ColumnDefinition Width="Auto" />
+                           <ColumnDefinition Width="Auto" />
                            <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
                         <Grid.RowDefinitions>
@@ -204,7 +206,10 @@
                                Grid.Row="6"
                                Text="Magnetometer"
                                FontAttributes="Bold" />
-
+                        <Label Grid.Column="6"
+                               Grid.Row="6"
+                               Text="Orientation"
+                               FontAttributes="Bold" />
 
 
                         <Label Grid.Column="1"
@@ -246,8 +251,13 @@
                         <Label Grid.Column="5"
                                Grid.Row="6"
                                Text="{Binding MagnetometerSummary}" />
+                        <Label Grid.Column="7"
+                               Grid.Row="6"
+                               Text="{Binding OrientationSummary}" />
+
+
                         <StackLayout Grid.Row="6"
-                                     Grid.Column="6"
+                                     Grid.Column="8"
                                      Grid.ColumnSpan="1"
                                      Orientation="Horizontal"
                                      HorizontalOptions="EndAndExpand">

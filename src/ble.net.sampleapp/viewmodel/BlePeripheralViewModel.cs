@@ -16,6 +16,7 @@ using nexus.core.logging;
 using nexus.core.text;
 using nexus.protocols.ble.scan;
 using nexus.protocols.ble.scan.advertisement;
+using RhbTypes;
 using Xamarin.Forms;
 
 namespace ble.net.sampleapp.viewmodel
@@ -166,7 +167,7 @@ namespace ble.net.sampleapp.viewmodel
          return Model.GetHashCode();
       }
 
-      private float GetFloatFromString(string rawString, int offset)
+      private double GetDoubleFromString(string rawString, int offset)
       {
          if (offset >= rawString.Length)
          {
@@ -175,10 +176,11 @@ namespace ble.net.sampleapp.viewmodel
          }
          var upperByte = (byte) rawString[offset];
          var lowerByte = (byte) rawString[offset+1];
-         return 0.0F;
+         var result = (new double()).FromFloat16(upperByte, lowerByte);
+         return result;
       }
 
-      private float GetFloatFromString(string rawString, int offset, int negativeFlagBit, int negativeFlagByte)
+      private double GetDoubleFromString(string rawString, int offset, int negativeFlagBit, int negativeFlagByte)
       {
          if (offset >= rawString.Length)
          {
@@ -187,39 +189,93 @@ namespace ble.net.sampleapp.viewmodel
          }
          var upperByte = (byte) rawString[offset];
          var lowerByte = (byte) rawString[offset+1];
-         return 0.0F;
+
+         var result = (new double()).FromFloat16(upperByte, lowerByte);
+         return result;
       }
+
+      private double GetDoubleFromByteArray(byte[] message, int offset)
+      {
+         if (offset >= message.Length)
+         {
+            Log.Error($"Error in GetDoubleFromByteArray. offset: {offset}, message length: {message.Length}, message: '{message}'");
+            return 0.0F;
+         }
+         var upperByte = message[offset];
+         var lowerByte = message[offset - 1];
+
+         var result = (new double()).FromFloat16(upperByte, lowerByte);
+         return result;
+      }
+      private double GetDoubleFromByteArray(byte[] message, int offset, int negativeFlagBit, int negativeFlagByte)
+      {
+         if (offset >= message.Length || negativeFlagByte >= message.Length)
+         {
+            Log.Error($"Error in GetDoubleFromByteArray. offset: {offset}, negativeFlagByte: {negativeFlagByte}  message length: {message.Length}, message: '{message}'");
+            return 0.0F;
+         }
+         var upperByte = message[offset];
+         var lowerByte = message[offset - 1];
+
+         var result = (new double()).FromFloat16(upperByte, lowerByte);
+         if ((message[negativeFlagByte] & negativeFlagBit) != 0)
+         {
+            result *= -1;
+         }
+
+         return result;
+      }
+
       private void InterpretMessage()
       {
          //Log.Debug("entering InterpretMessage");
 
-         var message = ManufacturerData;
+         var messages = Model.Advertisement.RawData;
+
+         int messageNo = 0;
+         bool found = false;
+         byte[] dataMessage = new byte[] { };
+         foreach (var message in messages)
+         {
+            Log.Debug($"Message: {messageNo}:  length: {message.Data.Length}: data:{ByteArrayToString(message.Data)}");
+            if (message.Type == AdvertisingDataType.ServiceData128)
+            {
+               dataMessage = message.Data;
+               found = true;
+            }
+            messageNo++;
+         }
+
+         if (!found)
+         {
+            Log.Debug($"Couldn't find dataMessage");
+            return;
+            ;
+         }
 
          // We need to convert gyro, mag and accel from float16.
          // Let's hope the conversion .. works.
-         _accel.X = GetFloatFromString(message, INDEX_ACCELERATION_X);
-         _accel.Y = GetFloatFromString(message, INDEX_ACCELERATION_Y);
-         _accel.Z = GetFloatFromString(message, INDEX_ACCELERATION_Z);
+         _accel.X = GetDoubleFromByteArray(dataMessage, INDEX_ACCELERATION_X);
+         _accel.Y = GetDoubleFromByteArray(dataMessage, INDEX_ACCELERATION_Y);
+         _accel.Z = GetDoubleFromByteArray(dataMessage, INDEX_ACCELERATION_Z);
 
-         _mag.X = GetFloatFromString(message, INDEX_MAGNEMOTER_X);
-         _mag.Y = GetFloatFromString(message, INDEX_MAGNEMOTER_Y);
-         _mag.Z = GetFloatFromString(message, INDEX_MAGNEMOTER_Z);
+         _mag.X = GetDoubleFromByteArray(dataMessage, INDEX_MAGNEMOTER_X);
+         _mag.Y = GetDoubleFromByteArray(dataMessage, INDEX_MAGNEMOTER_Y);
+         _mag.Z = GetDoubleFromByteArray(dataMessage, INDEX_MAGNEMOTER_Z);
 
-         _gyro.X = GetFloatFromString(message, INDEX_GYROSCOPE_X);
-         _gyro.Y = GetFloatFromString(message, INDEX_GYROSCOPE_Y);
-         _gyro.Z = GetFloatFromString(message, INDEX_GYROSCOPE_Z);
+         _gyro.X = GetDoubleFromByteArray(dataMessage, INDEX_GYROSCOPE_X);
+         _gyro.Y = GetDoubleFromByteArray(dataMessage, INDEX_GYROSCOPE_Y);
+         _gyro.Z = GetDoubleFromByteArray(dataMessage, INDEX_GYROSCOPE_Z);
 
-         _orientation.X = GetFloatFromString(message, INDEX_ORIENTATION_X, NEG_BIT_ORIENTATION_X, INDEX_SIGN_ORIENTATION_ACCEL);
-         _orientation.Y = GetFloatFromString(message, INDEX_ORIENTATION_Y, NEG_BIT_ORIENTATION_Y, INDEX_SIGN_ORIENTATION_ACCEL);
-         _orientation.Z = GetFloatFromString(message, INDEX_ORIENTATION_Z, NEG_BIT_ORIENTATION_Z, INDEX_SIGN_ORIENTATION_ACCEL);
+         _orientation.X = GetDoubleFromByteArray(dataMessage, INDEX_ORIENTATION_X, NEG_BIT_ORIENTATION_X, INDEX_SIGN_ORIENTATION_ACCEL);
+         _orientation.Y = GetDoubleFromByteArray(dataMessage, INDEX_ORIENTATION_Y, NEG_BIT_ORIENTATION_Y, INDEX_SIGN_ORIENTATION_ACCEL);
+         _orientation.Z = GetDoubleFromByteArray(dataMessage, INDEX_ORIENTATION_Z, NEG_BIT_ORIENTATION_Z, INDEX_SIGN_ORIENTATION_ACCEL);
          //Log.Debug("leaving InterpretMessage");
       }
 
       private void RefreshBatteryLevel()
       {
-
-         var serviceData =
-            Model.Advertisement.Services.ToList();
+         var serviceData =  Model.Advertisement.Services.ToList();
 
          var batteryServices= Model.Advertisement.ServiceData.Where(e => e.Key == _batteryServiceKey);
          if (batteryServices.Any())
@@ -233,14 +289,6 @@ namespace ble.net.sampleapp.viewmodel
          {
             Log.Debug($"Battery service not found");
          }
-
-/*
-            foreach (var serviceDataItem in serviceData)
-         {
-   //         Log.Debug($"service found: '{serviceDataItem}' with value: '{ByteArrayToString(serviceDataItem.ToByteArray())}");
-  //          Debug.WriteLine($"service found: '{serviceDataItem}' with value: '{ByteArrayToString(serviceDataItem.ToByteArray())}");
-         }*/
-
          _batteryLevel = _random.Next(0, 100);
       }
       private static string ByteArrayToString(byte[] ba)
@@ -266,9 +314,8 @@ namespace ble.net.sampleapp.viewmodel
          var now = DateTime.Now;
          _msSinceLastPing = now.Subtract(LastPing).TotalMilliseconds;
          LastPing = now;
-         Log.Debug($"time since last ping {MsSinceLastPing}");
-         // MsSinceLastPing = DateTime.Now.Subtract(LastPing).TotalMilliseconds;
-          //InterpretMessage();*/
+
+         InterpretMessage();
          RefreshBatteryLevel();
 
          RaisePropertyChanged(nameof(Address));
@@ -288,12 +335,9 @@ namespace ble.net.sampleapp.viewmodel
 
          RaisePropertyChanged(nameof(BatteryLevel));
          RaisePropertyChanged(nameof(MsSinceLastPing));
-
-
-/*
          RaisePropertyChanged(nameof(LastPing));
-         RaisePropertyChanged(nameof(MsSinceLastPing));
-         RaisePropertyChanged(nameof(BatteryLevel));
+
+
          RaisePropertyChanged(nameof(AccelerometerSummary));
          RaisePropertyChanged(nameof(GyroScopeSummary));
          RaisePropertyChanged(nameof(MagnetometerSummary));
@@ -301,7 +345,7 @@ namespace ble.net.sampleapp.viewmodel
          RaisePropertyChanged(nameof(Accelerometer));
          RaisePropertyChanged(nameof(GyroScope));
          RaisePropertyChanged(nameof(Magnetometer));
-         RaisePropertyChanged(nameof(Orientation));*/
+         RaisePropertyChanged(nameof(Orientation));
 
       }
    }

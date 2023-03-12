@@ -89,6 +89,10 @@
       <Project>{9e4d7784-b138-4cd6-9b55-2ba70648ac93}</Project>
       <Name>ble.net.sampleapp</Name>
     </ProjectReference>
+    <ProjectReference Include="..\RhbTypes\RhbTypes.csproj">
+      <Project>{70eac460-f9ec-48ab-b18b-c760dd50190c}</Project>
+      <Name>RhbTypes</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\drawable-xxhdpi\icon.png" />
