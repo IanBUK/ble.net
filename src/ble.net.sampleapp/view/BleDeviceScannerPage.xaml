@@ -188,7 +188,7 @@
                                FontAttributes="Bold" />
                         <Label Grid.Column="0"
                                Grid.Row="4"
-                               Text="Services"
+                               Text="Sensor ID"
                                FontAttributes="Bold" />
                         <Label Grid.Column="0"
                                Grid.Row="5"
@@ -241,7 +241,7 @@
                                Text="{Binding AdvertisedServices}" />
                         <Label Grid.Column="1"
                                Grid.Row="5"
-                               Text="{Binding ServiceData}" />
+                               Text="{Binding SensorId}" />
                         <Label Grid.Column="1"
                                Grid.Row="6"
                                Text="{Binding AccelerometerSummary}" />

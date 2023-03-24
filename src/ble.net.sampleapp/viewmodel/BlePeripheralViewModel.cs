@@ -29,7 +29,7 @@ namespace ble.net.sampleapp.viewmodel
 
 
       private Random _random = new Random(DateTime.Now.Millisecond);
-
+      private string _sensorId = string.Empty;
       private Vector3D _gyro = new Vector3D();
       private Vector3D _accel = new Vector3D();
       private Vector3D _mag = new Vector3D();
@@ -54,14 +54,14 @@ namespace ble.net.sampleapp.viewmodel
       const int INDEX_MAGNEMOTER_Y = 13;
       const int INDEX_MAGNEMOTER_Z = 15;
 
-      const int INDEX_GYROSCOPE_X = 17;
-      const int INDEX_GYROSCOPE_Y = 19;
-      const int INDEX_GYROSCOPE_Z = 21;
+      const int INDEX_GYROSCOPE_X = 11;
+      const int INDEX_GYROSCOPE_Y = 13;
+      const int INDEX_GYROSCOPE_Z = 15;
 
       private  Guid _batteryServiceKey = new Guid("0000180c-0000-1000-8000-00805f9b34fb");//"180F";
 
-      const int INDEX_MINOR = 23;
-      const int INDEX_MAJOR = 24;
+      const int INDEX_MAJOR = 16;
+      const int INDEX_MINOR = 15;
 
       public BlePeripheralViewModel( IBlePeripheral model, Func<BlePeripheralViewModel, Task> onSelectDevice )
       {
@@ -109,6 +109,8 @@ namespace ble.net.sampleapp.viewmodel
       public Vector3D GyroScope => _gyro;
       public Vector3D Orientation => _orientation;
 
+
+      public string SensorId => _sensorId;
 
       public String Advertisement => Model.Advertisement.ToString();
 
@@ -228,49 +230,40 @@ namespace ble.net.sampleapp.viewmodel
 
       private void InterpretMessage()
       {
-         //Log.Debug("entering InterpretMessage");
+         Log.Debug("entering InterpretMessage");
 
          var messages = Model.Advertisement.RawData;
-
-         int messageNo = 0;
-         bool found = false;
-         byte[] dataMessage = new byte[] { };
-         foreach (var message in messages)
+         foreach (var item in Model.Advertisement.ManufacturerSpecificData)
          {
-            Log.Debug($"Message: {messageNo}:  length: {message.Data.Length}: data:{ByteArrayToString(message.Data)}");
-            if (message.Type == AdvertisingDataType.ServiceData128)
+            if (item.CompanyId.HasValue && IsImuAdvert(item.CompanyId.Value))
             {
-               dataMessage = message.Data;
-               found = true;
+               // inflate item.Data
+               _accel.X = GetDoubleFromByteArray(item.Data, INDEX_ACCELERATION_X);
+               _accel.Y = GetDoubleFromByteArray(item.Data, INDEX_ACCELERATION_Y);
+               _accel.Z = GetDoubleFromByteArray(item.Data, INDEX_ACCELERATION_Z);
+
+               _gyro.X = GetDoubleFromByteArray(item.Data, INDEX_GYROSCOPE_X);
+               _gyro.Y = GetDoubleFromByteArray(item.Data, INDEX_GYROSCOPE_Y);
+               _gyro.Z = GetDoubleFromByteArray(item.Data, INDEX_GYROSCOPE_Z);
+
+               _orientation.X = GetDoubleFromByteArray(item.Data, INDEX_ORIENTATION_X, NEG_BIT_ORIENTATION_X,
+                  INDEX_SIGN_ORIENTATION_ACCEL);
+               _orientation.Y = GetDoubleFromByteArray(item.Data, INDEX_ORIENTATION_Y, NEG_BIT_ORIENTATION_Y,
+                  INDEX_SIGN_ORIENTATION_ACCEL);
+               _orientation.Z = GetDoubleFromByteArray(item.Data, INDEX_ORIENTATION_Z, NEG_BIT_ORIENTATION_Z,
+                  INDEX_SIGN_ORIENTATION_ACCEL);
+
+               _sensorId = (item.Data[INDEX_MINOR] + (item.Data[INDEX_MAJOR] << 8)).ToString();
             }
-            messageNo++;
          }
 
-         if (!found)
-         {
-            Log.Debug($"Couldn't find dataMessage");
-            return;
-            ;
-         }
+         Log.Debug("leaving InterpretMessage");
+      }
 
-         // We need to convert gyro, mag and accel from float16.
-         // Let's hope the conversion .. works.
-         _accel.X = GetDoubleFromByteArray(dataMessage, INDEX_ACCELERATION_X);
-         _accel.Y = GetDoubleFromByteArray(dataMessage, INDEX_ACCELERATION_Y);
-         _accel.Z = GetDoubleFromByteArray(dataMessage, INDEX_ACCELERATION_Z);
 
-         _mag.X = GetDoubleFromByteArray(dataMessage, INDEX_MAGNEMOTER_X);
-         _mag.Y = GetDoubleFromByteArray(dataMessage, INDEX_MAGNEMOTER_Y);
-         _mag.Z = GetDoubleFromByteArray(dataMessage, INDEX_MAGNEMOTER_Z);
-
-         _gyro.X = GetDoubleFromByteArray(dataMessage, INDEX_GYROSCOPE_X);
-         _gyro.Y = GetDoubleFromByteArray(dataMessage, INDEX_GYROSCOPE_Y);
-         _gyro.Z = GetDoubleFromByteArray(dataMessage, INDEX_GYROSCOPE_Z);
-
-         _orientation.X = GetDoubleFromByteArray(dataMessage, INDEX_ORIENTATION_X, NEG_BIT_ORIENTATION_X, INDEX_SIGN_ORIENTATION_ACCEL);
-         _orientation.Y = GetDoubleFromByteArray(dataMessage, INDEX_ORIENTATION_Y, NEG_BIT_ORIENTATION_Y, INDEX_SIGN_ORIENTATION_ACCEL);
-         _orientation.Z = GetDoubleFromByteArray(dataMessage, INDEX_ORIENTATION_Z, NEG_BIT_ORIENTATION_Z, INDEX_SIGN_ORIENTATION_ACCEL);
-         //Log.Debug("leaving InterpretMessage");
+      private bool IsImuAdvert(ushort companyId)
+      {
+         return companyId == 767;
       }
 
       private void RefreshBatteryLevel()
@@ -316,7 +309,7 @@ namespace ble.net.sampleapp.viewmodel
          LastPing = now;
 
          InterpretMessage();
-         RefreshBatteryLevel();
+         //RefreshBatteryLevel();
 
          RaisePropertyChanged(nameof(Address));
          RaisePropertyChanged(nameof(AddressAndName));
@@ -346,6 +339,8 @@ namespace ble.net.sampleapp.viewmodel
          RaisePropertyChanged(nameof(GyroScope));
          RaisePropertyChanged(nameof(Magnetometer));
          RaisePropertyChanged(nameof(Orientation));
+         RaisePropertyChanged(nameof(SensorId));
+
 
       }
    }
