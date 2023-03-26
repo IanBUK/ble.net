@@ -33,7 +33,7 @@ namespace ble.net.sampleapp.viewmodel
       private Vector3D _gyro = new Vector3D();
       private Vector3D _accel = new Vector3D();
       private Vector3D _mag = new Vector3D();
-      private Vector3D _orientation = new Vector3D();
+      private Orientation _orientation = new Orientation();
       private int _batteryLevel = 0;
       private double _msSinceLastPing = 0.0;
       private const int INDEX_OFFSET = 3;
@@ -44,7 +44,7 @@ namespace ble.net.sampleapp.viewmodel
 
       const int INDEX_ORIENTATION_PITCH = 1;
       const int INDEX_ORIENTATION_ROLL = 3;
-      const int INDEX_ORIENTATION_HEADING = 5;
+      const int INDEX_ORIENTATION_YAW = 5;
 
       const int INDEX_ACCELERATION_X = 7;
       const int INDEX_ACCELERATION_Y = 9;
@@ -254,9 +254,9 @@ namespace ble.net.sampleapp.viewmodel
             // _orientation.Z = GetDoubleFromByteArray(item.Data, INDEX_ORIENTATION_Z, NEG_BIT_ORIENTATION_Z,
             //    INDEX_SIGN_ORIENTATION_ACCEL);
 
-            _orientation.X = GetDoubleFromByteArray(item.Data, INDEX_OFFSET + INDEX_ORIENTATION_PITCH);
-            _orientation.Y = GetDoubleFromByteArray(item.Data, INDEX_OFFSET + INDEX_ORIENTATION_ROLL);
-            _orientation.Z = GetDoubleFromByteArray(item.Data, INDEX_OFFSET + INDEX_ORIENTATION_HEADING);
+            _orientation.Pitch = GetDoubleFromByteArray(item.Data, INDEX_OFFSET + INDEX_ORIENTATION_PITCH);
+            _orientation.Roll = GetDoubleFromByteArray(item.Data, INDEX_OFFSET + INDEX_ORIENTATION_YAW);
+            _orientation.Yaw = GetDoubleFromByteArray(item.Data, INDEX_OFFSET + INDEX_ORIENTATION_ROLL);
 
             _sensorId = (item.Data[INDEX_OFFSET + INDEX_MINOR] + (item.Data[INDEX_OFFSET + INDEX_MAJOR] << 8)).ToString();
             _batteryLevel = (int) item.Data[INDEX_OFFSET + INDEX_BATTERY];
