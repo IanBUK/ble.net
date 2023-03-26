@@ -36,23 +36,23 @@ namespace ble.net.sampleapp.viewmodel
       private Vector3D _orientation = new Vector3D();
       private int _batteryLevel = 0;
       private double _msSinceLastPing = 0.0;
-
+      private const int INDEX_OFFSET = 3;
       const int NEG_BIT_ORIENTATION_X = 1;
       const int NEG_BIT_ORIENTATION_Y = 2;
       const int NEG_BIT_ORIENTATION_Z = 4;
       const int INDEX_SIGN_ORIENTATION_ACCEL = 0;
 
-      const int INDEX_ORIENTATION_X = 1;
-      const int INDEX_ORIENTATION_Y = 2;
-      const int INDEX_ORIENTATION_Z = 3;
+      const int INDEX_ORIENTATION_PITCH = 1;
+      const int INDEX_ORIENTATION_ROLL = 3;
+      const int INDEX_ORIENTATION_HEADING = 5;
 
-      const int INDEX_ACCELERATION_X = 5;
-      const int INDEX_ACCELERATION_Y = 7;
-      const int INDEX_ACCELERATION_Z = 9;
+      const int INDEX_ACCELERATION_X = 7;
+      const int INDEX_ACCELERATION_Y = 9;
+      const int INDEX_ACCELERATION_Z = 11;
 
-      const int INDEX_MAGNEMOTER_X = 11;
-      const int INDEX_MAGNEMOTER_Y = 13;
-      const int INDEX_MAGNEMOTER_Z = 15;
+      const int INDEX_MAGNEMOTER_X = 13;
+      const int INDEX_MAGNEMOTER_Y = 15;
+      const int INDEX_MAGNEMOTER_Z = 17;
 
       const int INDEX_GYROSCOPE_X = 11;
       const int INDEX_GYROSCOPE_Y = 13;
@@ -60,8 +60,9 @@ namespace ble.net.sampleapp.viewmodel
 
       private  Guid _batteryServiceKey = new Guid("0000180c-0000-1000-8000-00805f9b34fb");//"180F";
 
-      const int INDEX_MAJOR = 16;
-      const int INDEX_MINOR = 15;
+      const int INDEX_MINOR = 19;
+      const int INDEX_MAJOR = 20;
+      const int INDEX_BATTERY = 21;
 
       public BlePeripheralViewModel( IBlePeripheral model, Func<BlePeripheralViewModel, Task> onSelectDevice )
       {
@@ -204,7 +205,7 @@ namespace ble.net.sampleapp.viewmodel
             return 0.0F;
          }
          var upperByte = message[offset];
-         var lowerByte = message[offset - 1];
+         var lowerByte = message[offset + 1];
 
          var result = (new double()).FromFloat16(upperByte, lowerByte);
          return result;
@@ -217,7 +218,7 @@ namespace ble.net.sampleapp.viewmodel
             return 0.0F;
          }
          var upperByte = message[offset];
-         var lowerByte = message[offset - 1];
+         var lowerByte = message[offset + 1];
 
          var result = (new double()).FromFloat16(upperByte, lowerByte);
          if ((message[negativeFlagByte] & negativeFlagBit) != 0)
@@ -233,28 +234,32 @@ namespace ble.net.sampleapp.viewmodel
          Log.Debug("entering InterpretMessage");
 
          var messages = Model.Advertisement.RawData;
-         foreach (var item in Model.Advertisement.ManufacturerSpecificData)
+         if (Model.Advertisement.ManufacturerSpecificData.Any())
          {
-            if (item.CompanyId.HasValue && IsImuAdvert(item.CompanyId.Value))
-            {
-               // inflate item.Data
-               _accel.X = GetDoubleFromByteArray(item.Data, INDEX_ACCELERATION_X);
-               _accel.Y = GetDoubleFromByteArray(item.Data, INDEX_ACCELERATION_Y);
-               _accel.Z = GetDoubleFromByteArray(item.Data, INDEX_ACCELERATION_Z);
+            var item = Model.Advertisement.ManufacturerSpecificData.First();
 
-               _gyro.X = GetDoubleFromByteArray(item.Data, INDEX_GYROSCOPE_X);
-               _gyro.Y = GetDoubleFromByteArray(item.Data, INDEX_GYROSCOPE_Y);
-               _gyro.Z = GetDoubleFromByteArray(item.Data, INDEX_GYROSCOPE_Z);
+            // inflate item.Data
+            _accel.X = GetDoubleFromByteArray(item.Data, INDEX_OFFSET + INDEX_ACCELERATION_X);
+            _accel.Y = GetDoubleFromByteArray(item.Data, INDEX_OFFSET + INDEX_ACCELERATION_Y);
+            _accel.Z = GetDoubleFromByteArray(item.Data, INDEX_OFFSET + INDEX_ACCELERATION_Z);
 
-               _orientation.X = GetDoubleFromByteArray(item.Data, INDEX_ORIENTATION_X, NEG_BIT_ORIENTATION_X,
-                  INDEX_SIGN_ORIENTATION_ACCEL);
-               _orientation.Y = GetDoubleFromByteArray(item.Data, INDEX_ORIENTATION_Y, NEG_BIT_ORIENTATION_Y,
-                  INDEX_SIGN_ORIENTATION_ACCEL);
-               _orientation.Z = GetDoubleFromByteArray(item.Data, INDEX_ORIENTATION_Z, NEG_BIT_ORIENTATION_Z,
-                  INDEX_SIGN_ORIENTATION_ACCEL);
+            _gyro.X = GetDoubleFromByteArray(item.Data, INDEX_OFFSET + INDEX_GYROSCOPE_X);
+            _gyro.Y = GetDoubleFromByteArray(item.Data, INDEX_OFFSET + INDEX_GYROSCOPE_Y);
+            _gyro.Z = GetDoubleFromByteArray(item.Data, INDEX_OFFSET + INDEX_GYROSCOPE_Z);
 
-               _sensorId = (item.Data[INDEX_MINOR] + (item.Data[INDEX_MAJOR] << 8)).ToString();
-            }
+            // _orientation.X = GetDoubleFromByteArray(item.Data, INDEX_ORIENTATION_X, NEG_BIT_ORIENTATION_X,
+            //    INDEX_SIGN_ORIENTATION_ACCEL);
+            // _orientation.Y = GetDoubleFromByteArray(item.Data, INDEX_ORIENTATION_Y, NEG_BIT_ORIENTATION_Y,
+            //    INDEX_SIGN_ORIENTATION_ACCEL);
+            // _orientation.Z = GetDoubleFromByteArray(item.Data, INDEX_ORIENTATION_Z, NEG_BIT_ORIENTATION_Z,
+            //    INDEX_SIGN_ORIENTATION_ACCEL);
+
+            _orientation.X = GetDoubleFromByteArray(item.Data, INDEX_OFFSET + INDEX_ORIENTATION_PITCH);
+            _orientation.Y = GetDoubleFromByteArray(item.Data, INDEX_OFFSET + INDEX_ORIENTATION_ROLL);
+            _orientation.Z = GetDoubleFromByteArray(item.Data, INDEX_OFFSET + INDEX_ORIENTATION_HEADING);
+
+            _sensorId = (item.Data[INDEX_OFFSET + INDEX_MINOR] + (item.Data[INDEX_OFFSET + INDEX_MAJOR] << 8)).ToString();
+            _batteryLevel = (int) item.Data[INDEX_OFFSET + INDEX_BATTERY];
          }
 
          Log.Debug("leaving InterpretMessage");
@@ -263,27 +268,9 @@ namespace ble.net.sampleapp.viewmodel
 
       private bool IsImuAdvert(ushort companyId)
       {
-         return companyId == 767;
+         return companyId == 50178;//767;
       }
 
-      private void RefreshBatteryLevel()
-      {
-         var serviceData =  Model.Advertisement.Services.ToList();
-
-         var batteryServices= Model.Advertisement.ServiceData.Where(e => e.Key == _batteryServiceKey);
-         if (batteryServices.Any())
-         {
-            foreach (var batteryService in batteryServices)
-            {
-               Log.Debug($"battery service: {batteryService.Key} - {batteryService.Value}");
-            }
-         }
-         else
-         {
-            Log.Debug($"Battery service not found");
-         }
-         _batteryLevel = _random.Next(0, 100);
-      }
       private static string ByteArrayToString(byte[] ba)
       {
          if (ba != null)
@@ -309,7 +296,6 @@ namespace ble.net.sampleapp.viewmodel
          LastPing = now;
 
          InterpretMessage();
-         //RefreshBatteryLevel();
 
          RaisePropertyChanged(nameof(Address));
          RaisePropertyChanged(nameof(AddressAndName));
