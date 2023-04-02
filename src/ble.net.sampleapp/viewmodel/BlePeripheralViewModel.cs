@@ -108,7 +108,7 @@ namespace ble.net.sampleapp.viewmodel
       public Vector3D Magnetometer => _mag;
 
       public Vector3D GyroScope => _gyro;
-      public Vector3D Orientation => _orientation;
+      public Orientation Orientation => _orientation;
 
 
       public string SensorId => _sensorId;
@@ -231,38 +231,47 @@ namespace ble.net.sampleapp.viewmodel
 
       private void InterpretMessage()
       {
-         Log.Debug("entering InterpretMessage");
-
+         //
+         _sensorId = Model.Advertisement.DeviceName;
+         Log.Debug($"entering InterpretMessage for device: '{_sensorId}'");
          var messages = Model.Advertisement.RawData;
-         if (Model.Advertisement.ManufacturerSpecificData.Any())
+         try
          {
-            var item = Model.Advertisement.ManufacturerSpecificData.First();
+            if (!Model.Advertisement.ManufacturerSpecificData.Any())
+            {
+               Log.Trace($"No advert for sensor '{_sensorId}'");
+            }
+            else
+            {
+               var item = Model.Advertisement.ManufacturerSpecificData.First();
 
-            // inflate item.Data
-            _accel.X = GetDoubleFromByteArray(item.Data, INDEX_OFFSET + INDEX_ACCELERATION_X);
-            _accel.Y = GetDoubleFromByteArray(item.Data, INDEX_OFFSET + INDEX_ACCELERATION_Y);
-            _accel.Z = GetDoubleFromByteArray(item.Data, INDEX_OFFSET + INDEX_ACCELERATION_Z);
+               // inflate item.Data
+               _accel.X = GetDoubleFromByteArray(item.Data, INDEX_OFFSET + INDEX_ACCELERATION_X);
+               _accel.Y = GetDoubleFromByteArray(item.Data, INDEX_OFFSET + INDEX_ACCELERATION_Y);
+               _accel.Z = GetDoubleFromByteArray(item.Data, INDEX_OFFSET + INDEX_ACCELERATION_Z);
 
-            _gyro.X = GetDoubleFromByteArray(item.Data, INDEX_OFFSET + INDEX_GYROSCOPE_X);
-            _gyro.Y = GetDoubleFromByteArray(item.Data, INDEX_OFFSET + INDEX_GYROSCOPE_Y);
-            _gyro.Z = GetDoubleFromByteArray(item.Data, INDEX_OFFSET + INDEX_GYROSCOPE_Z);
+               _gyro.X = GetDoubleFromByteArray(item.Data, INDEX_OFFSET + INDEX_GYROSCOPE_X);
+               _gyro.Y = GetDoubleFromByteArray(item.Data, INDEX_OFFSET + INDEX_GYROSCOPE_Y);
+               _gyro.Z = GetDoubleFromByteArray(item.Data, INDEX_OFFSET + INDEX_GYROSCOPE_Z);
 
-            // _orientation.X = GetDoubleFromByteArray(item.Data, INDEX_ORIENTATION_X, NEG_BIT_ORIENTATION_X,
-            //    INDEX_SIGN_ORIENTATION_ACCEL);
-            // _orientation.Y = GetDoubleFromByteArray(item.Data, INDEX_ORIENTATION_Y, NEG_BIT_ORIENTATION_Y,
-            //    INDEX_SIGN_ORIENTATION_ACCEL);
-            // _orientation.Z = GetDoubleFromByteArray(item.Data, INDEX_ORIENTATION_Z, NEG_BIT_ORIENTATION_Z,
-            //    INDEX_SIGN_ORIENTATION_ACCEL);
+               _orientation.Pitch = GetDoubleFromByteArray(item.Data, INDEX_OFFSET + INDEX_ORIENTATION_PITCH);
+               _orientation.Roll = GetDoubleFromByteArray(item.Data, INDEX_OFFSET + INDEX_ORIENTATION_YAW);
+               _orientation.Yaw = GetDoubleFromByteArray(item.Data, INDEX_OFFSET + INDEX_ORIENTATION_ROLL);
 
-            _orientation.Pitch = GetDoubleFromByteArray(item.Data, INDEX_OFFSET + INDEX_ORIENTATION_PITCH);
-            _orientation.Roll = GetDoubleFromByteArray(item.Data, INDEX_OFFSET + INDEX_ORIENTATION_YAW);
-            _orientation.Yaw = GetDoubleFromByteArray(item.Data, INDEX_OFFSET + INDEX_ORIENTATION_ROLL);
+               _sensorId = (item.Data[INDEX_OFFSET + INDEX_MINOR] + (item.Data[INDEX_OFFSET + INDEX_MAJOR] << 8))
+                  .ToString();
+               _batteryLevel = (int) item.Data[INDEX_OFFSET + INDEX_BATTERY];
+               Log.Trace($"Sensor seen: {_sensorId}");
+            }
+         }
+         catch (Exception e)
+         {
+            Log.Error($"Exception interpreting advert: '{e.Message}'");
 
-            _sensorId = (item.Data[INDEX_OFFSET + INDEX_MINOR] + (item.Data[INDEX_OFFSET + INDEX_MAJOR] << 8)).ToString();
-            _batteryLevel = (int) item.Data[INDEX_OFFSET + INDEX_BATTERY];
          }
 
-         Log.Debug("leaving InterpretMessage");
+
+         //Log.Debug("leaving InterpretMessage");
       }
 
 

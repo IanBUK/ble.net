@@ -7,6 +7,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -95,6 +96,7 @@ namespace ble.net.sampleapp.viewmodel
             peripheral =>
             {
                //Log.Trace($"Into peripheral =>");
+
                Device.BeginInvokeOnMainThread(
                   () =>
                   {
@@ -104,10 +106,12 @@ namespace ble.net.sampleapp.viewmodel
                         var existing = FoundDevices.FirstOrDefault(d => d.Equals(peripheral));
                         if (existing != null)
                         {
+                           //Log.Trace("update existing device.");
                            existing.Update(peripheral);
                         }
                         else
                         {
+                           //Log.Trace("Add new device");
                            FoundDevices.Add(new BlePeripheralViewModel(peripheral, m_onSelectDevice));
                         }
                      }
@@ -123,10 +127,18 @@ namespace ble.net.sampleapp.viewmodel
 
       private static bool IsRhbSensor(IBlePeripheral peripheral)
       {
-         if (peripheral?.Advertisement == null || string.IsNullOrEmpty(peripheral.Advertisement.DeviceName) )
+         if (peripheral.Advertisement == null)
          {
+            //Log.Trace(($"device '{peripheral.DeviceId}' has no advert"));
             return false;
          }
+         if(string.IsNullOrEmpty(peripheral.Advertisement.DeviceName) )
+         {
+            //Log.Trace($"NullOrEmpty device name for device '{peripheral.DeviceId}'");
+            return false;
+         }
+         //Debug.WriteLine($"device '{peripheral.DeviceId}' named '{peripheral.Advertisement.DeviceName}' found. Is sensor: '{peripheral.Advertisement.DeviceName.StartsWith("RHB")}'");
+         //Log.Trace($"device '{peripheral.DeviceId}' named '{peripheral.Advertisement.DeviceName}' found. Is sensor: '{peripheral.Advertisement.DeviceName.StartsWith("RHB")}'");
          return peripheral.Advertisement.DeviceName.StartsWith("RHB");
       }
    }
