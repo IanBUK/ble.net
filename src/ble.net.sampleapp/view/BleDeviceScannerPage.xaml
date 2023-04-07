@@ -196,8 +196,7 @@
                                    Command="{Binding ConnectToDeviceCommand}"
                                    HorizontalOptions="EndAndExpand">
                               <Button.TextColor>
-                                 <OnPlatform x:TypeArguments="Color"
-                                             WinPhone="DarkOrange" />
+                                 <OnPlatform x:TypeArguments="Color" WinPhone="DarkOrange" />
                               </Button.TextColor>
                            </Button>
                         </StackLayout>

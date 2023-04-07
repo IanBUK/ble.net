@@ -74,7 +74,7 @@ namespace ble.net.sampleapp.viewmodel
             TimeSpan.FromSeconds( 1 ),
             () =>
             {
-               Log.Trace($"Tick. time remaining: {ScanTimeRemaining} seconds");
+               //Log.Trace($"Tick. time remaining: {ScanTimeRemaining} seconds");
                RaisePropertyChanged( nameof(ScanTimeRemaining) );
                return IsScanning;
             } );

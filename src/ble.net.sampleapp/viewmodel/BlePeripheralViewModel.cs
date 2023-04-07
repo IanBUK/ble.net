@@ -233,7 +233,7 @@ namespace ble.net.sampleapp.viewmodel
       {
          //
          _sensorId = Model.Advertisement.DeviceName;
-         Log.Debug($"entering InterpretMessage for device: '{_sensorId}'");
+         //Log.Debug($"entering InterpretMessage for device: '{_sensorId}'");
          var messages = Model.Advertisement.RawData;
          try
          {
@@ -244,7 +244,10 @@ namespace ble.net.sampleapp.viewmodel
             else
             {
                var item = Model.Advertisement.ManufacturerSpecificData.First();
+               var itemAsString =  System.Text.Encoding.UTF8.GetString(item.Data);
 
+               Debug.WriteLine(itemAsString);
+               Log.Trace(itemAsString);
                // inflate item.Data
                _accel.X = GetDoubleFromByteArray(item.Data, INDEX_OFFSET + INDEX_ACCELERATION_X);
                _accel.Y = GetDoubleFromByteArray(item.Data, INDEX_OFFSET + INDEX_ACCELERATION_Y);

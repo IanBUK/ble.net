@@ -9,7 +9,7 @@
    <ScrollView x:Name="scrollView"
                Orientation="Vertical"
                VerticalOptions="FillAndExpand"
-               HorizontalOptions="FillAndExpand">
+               HorizontalOptions="FillAndExpand" >
       <Label x:Name="logsLabel"
              VerticalOptions="FillAndExpand"
              HorizontalOptions="FillAndExpand"
