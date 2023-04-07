@@ -1,5 +1,5 @@
 // Copyright M. Griffie <nexus@nexussays.com>
-// 
+//
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -438,7 +438,7 @@ namespace nexus.protocols.ble
                                             ScanSettings scanSettings, Action<IBlePeripheral> advertisementDiscovered,
                                             TimeSpan? timeout = null )
       {
-         Log.Trace($"5. ScanForBroadcasts.  adapter == null? {adapter == null}.\");// Filter.AdvertisedDeviceName: '{filter.AdvertisedDeviceName}', AdvertisedManufacturerCompanyId: '{filter.AdvertisedManufacturerCompanyId}',  AdvertisedServiceIsInList:'{filter.AdvertisedServiceIsInList}'");
+        // Log.Trace($"5. ScanForBroadcasts.  adapter == null? {adapter == null}.\");// Filter.AdvertisedDeviceName: '{filter.AdvertisedDeviceName}', AdvertisedManufacturerCompanyId: '{filter.AdvertisedManufacturerCompanyId}',  AdvertisedServiceIsInList:'{filter.AdvertisedServiceIsInList}'");
         // Log.Trace($"advertisementDiscovered: '{advertisementDiscovered.Method.Name}");
          if (adapter == null)
          {

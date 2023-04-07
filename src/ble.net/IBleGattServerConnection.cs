@@ -1,5 +1,5 @@
 // Copyright M. Griffie <nexus@nexussays.com>
-// 
+//
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -52,11 +52,7 @@ namespace nexus.protocols.ble
       /// necessary. To ensure  disconnection, await <see cref="Disconnect" /> instead of calling
       /// <see cref="Dispose" />.
       /// </summary>
-      [ObsoleteEx(
-         Message = "This functionality is now async",
-         TreatAsErrorFromVersion = "2.0.0",
-         RemoveInVersion = "2.1.0",
-         ReplacementTypeOrMember = nameof(Disconnect) )]
+
       new void Dispose();
 
       /// <summary>

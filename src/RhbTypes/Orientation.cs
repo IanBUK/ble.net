@@ -15,7 +15,7 @@ namespace RhbTypes
 
       public override string ToString()
       {
-         return $"P:{Pitch}, R:{Roll}, Y:{Yaw}";
+         return $"R:{Roll}, P:{Pitch}, Y:{Yaw}";
       }
    }
 }

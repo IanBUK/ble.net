@@ -1,5 +1,5 @@
 // Copyright M. Griffie <nexus@nexussays.com>
-// 
+//
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -7,6 +7,7 @@
 using System;
 using System.ComponentModel;
 using nexus.core;
+using nexus.core.logging;
 using nexus.core.text;
 
 namespace nexus.protocols.ble.scan.advertisement
@@ -22,6 +23,7 @@ namespace nexus.protocols.ble.scan.advertisement
       {
          CompanyId = company;
          Data = data;
+         Log.Trace($"CompanyID: '{CompanyId}'");
       }
 
       /// <summary>

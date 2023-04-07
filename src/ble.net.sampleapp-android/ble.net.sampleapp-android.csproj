@@ -89,6 +89,10 @@
       <Project>{9e4d7784-b138-4cd6-9b55-2ba70648ac93}</Project>
       <Name>ble.net.sampleapp</Name>
     </ProjectReference>
+    <ProjectReference Include="..\ble.net\ble.net.csproj">
+      <Project>{48788cda-ad31-4d16-ba67-831d0f6897f1}</Project>
+      <Name>ble.net</Name>
+    </ProjectReference>
     <ProjectReference Include="..\RhbTypes\RhbTypes.csproj">
       <Project>{70eac460-f9ec-48ab-b18b-c760dd50190c}</Project>
       <Name>RhbTypes</Name>

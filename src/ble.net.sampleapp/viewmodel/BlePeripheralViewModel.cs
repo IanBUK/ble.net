@@ -36,33 +36,71 @@ namespace ble.net.sampleapp.viewmodel
       private Orientation _orientation = new Orientation();
       private int _batteryLevel = 0;
       private double _msSinceLastPing = 0.0;
-      private const int INDEX_OFFSET = 3;
-      const int NEG_BIT_ORIENTATION_X = 1;
-      const int NEG_BIT_ORIENTATION_Y = 2;
-      const int NEG_BIT_ORIENTATION_Z = 4;
-      const int INDEX_SIGN_ORIENTATION_ACCEL = 0;
+      const int INDEX_ORIENTATION_PITCH = 0;
+      const int INDEX_ORIENTATION_ROLL = 2;
+      const int INDEX_ORIENTATION_YAW = 4;
 
-      const int INDEX_ORIENTATION_PITCH = 1;
-      const int INDEX_ORIENTATION_ROLL = 3;
-      const int INDEX_ORIENTATION_YAW = 5;
+      const int INDEX_ACCELERATION_X = 6;
+      const int INDEX_ACCELERATION_Y = 8;
+      const int INDEX_ACCELERATION_Z = 10;
 
-      const int INDEX_ACCELERATION_X = 7;
-      const int INDEX_ACCELERATION_Y = 9;
-      const int INDEX_ACCELERATION_Z = 11;
-
-      const int INDEX_MAGNEMOTER_X = 13;
-      const int INDEX_MAGNEMOTER_Y = 15;
-      const int INDEX_MAGNEMOTER_Z = 17;
-
-      const int INDEX_GYROSCOPE_X = 11;
-      const int INDEX_GYROSCOPE_Y = 13;
-      const int INDEX_GYROSCOPE_Z = 15;
+      const int INDEX_GYROSCOPE_X = 12;
+      const int INDEX_GYROSCOPE_Y = 14;
+      const int INDEX_GYROSCOPE_Z = 16;
 
       private  Guid _batteryServiceKey = new Guid("0000180c-0000-1000-8000-00805f9b34fb");//"180F";
 
-      const int INDEX_MINOR = 19;
-      const int INDEX_MAJOR = 20;
-      const int INDEX_BATTERY = 21;
+      const int INDEX_BATTERY = 18;
+
+      private void InterpretMessage()
+      {
+         //
+         _sensorId = Model.Advertisement.DeviceName;
+         //Log.Debug($"entering InterpretMessage for device: '{_sensorId}'");
+         var messages = Model.Advertisement.RawData;
+         try
+         {
+            if (!Model.Advertisement.ManufacturerSpecificData.Any())
+            {
+               Debug.WriteLine($"No advert for sensor '{_sensorId}'");
+               Log.Trace($"No advert for sensor '{_sensorId}'");
+            }
+            else
+            {
+               var item = Model.Advertisement.ManufacturerSpecificData.First();
+               var itemAsString =  System.Text.Encoding.UTF8.GetString(item.Data);
+
+               Debug.WriteLine(itemAsString);
+               Log.Trace(itemAsString);
+               // inflate item.Data
+               _accel.X = GetDoubleFromByteArray(item.Data,  INDEX_ACCELERATION_X);
+               _accel.Y = GetDoubleFromByteArray(item.Data,  INDEX_ACCELERATION_Y);
+               _accel.Z = GetDoubleFromByteArray(item.Data,  INDEX_ACCELERATION_Z);
+
+               _gyro.X = GetDoubleFromByteArray(item.Data,  INDEX_GYROSCOPE_X);
+               _gyro.Y = GetDoubleFromByteArray(item.Data,  INDEX_GYROSCOPE_Y);
+               _gyro.Z = GetDoubleFromByteArray(item.Data,  INDEX_GYROSCOPE_Z);
+
+               _orientation.Pitch = GetDoubleFromByteArray(item.Data,  INDEX_ORIENTATION_PITCH);
+               _orientation.Roll = GetDoubleFromByteArray(item.Data,  INDEX_ORIENTATION_ROLL);
+               _orientation.Yaw = GetDoubleFromByteArray(item.Data,  INDEX_ORIENTATION_YAW);
+
+               _batteryLevel = (int) item.Data[INDEX_BATTERY];
+               Log.Trace($"Sensor seen: {_sensorId}");
+            }
+         }
+         catch (Exception e)
+         {
+            Log.Error($"Exception interpreting advert: '{e.Message}'");
+
+         }
+      }
+
+
+
+
+
+
 
       public BlePeripheralViewModel( IBlePeripheral model, Func<BlePeripheralViewModel, Task> onSelectDevice )
       {
@@ -229,53 +267,6 @@ namespace ble.net.sampleapp.viewmodel
          return result;
       }
 
-      private void InterpretMessage()
-      {
-         //
-         _sensorId = Model.Advertisement.DeviceName;
-         //Log.Debug($"entering InterpretMessage for device: '{_sensorId}'");
-         var messages = Model.Advertisement.RawData;
-         try
-         {
-            if (!Model.Advertisement.ManufacturerSpecificData.Any())
-            {
-               Log.Trace($"No advert for sensor '{_sensorId}'");
-            }
-            else
-            {
-               var item = Model.Advertisement.ManufacturerSpecificData.First();
-               var itemAsString =  System.Text.Encoding.UTF8.GetString(item.Data);
-
-               Debug.WriteLine(itemAsString);
-               Log.Trace(itemAsString);
-               // inflate item.Data
-               _accel.X = GetDoubleFromByteArray(item.Data, INDEX_OFFSET + INDEX_ACCELERATION_X);
-               _accel.Y = GetDoubleFromByteArray(item.Data, INDEX_OFFSET + INDEX_ACCELERATION_Y);
-               _accel.Z = GetDoubleFromByteArray(item.Data, INDEX_OFFSET + INDEX_ACCELERATION_Z);
-
-               _gyro.X = GetDoubleFromByteArray(item.Data, INDEX_OFFSET + INDEX_GYROSCOPE_X);
-               _gyro.Y = GetDoubleFromByteArray(item.Data, INDEX_OFFSET + INDEX_GYROSCOPE_Y);
-               _gyro.Z = GetDoubleFromByteArray(item.Data, INDEX_OFFSET + INDEX_GYROSCOPE_Z);
-
-               _orientation.Pitch = GetDoubleFromByteArray(item.Data, INDEX_OFFSET + INDEX_ORIENTATION_PITCH);
-               _orientation.Roll = GetDoubleFromByteArray(item.Data, INDEX_OFFSET + INDEX_ORIENTATION_YAW);
-               _orientation.Yaw = GetDoubleFromByteArray(item.Data, INDEX_OFFSET + INDEX_ORIENTATION_ROLL);
-
-               _sensorId = (item.Data[INDEX_OFFSET + INDEX_MINOR] + (item.Data[INDEX_OFFSET + INDEX_MAJOR] << 8))
-                  .ToString();
-               _batteryLevel = (int) item.Data[INDEX_OFFSET + INDEX_BATTERY];
-               Log.Trace($"Sensor seen: {_sensorId}");
-            }
-         }
-         catch (Exception e)
-         {
-            Log.Error($"Exception interpreting advert: '{e.Message}'");
-
-         }
-
-
-         //Log.Debug("leaving InterpretMessage");
-      }
 
 
       private bool IsImuAdvert(ushort companyId)

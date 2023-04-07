@@ -1,5 +1,5 @@
 // Copyright M. Griffie <nexus@nexussays.com>
-// 
+//
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -16,10 +16,7 @@ namespace nexus.protocols.ble.scan
    /// <inheritdoc cref="IScanFilter" />
    public sealed class ScanFilter : IScanFilter
    {
-      [ObsoleteEx(
-         TreatAsErrorFromVersion = "2.0.0",
-         RemoveInVersion = "2.1.0",
-         ReplacementTypeOrMember = nameof(ScanSettings.UniqueBroadcastsOnly) )]
+
       public static readonly IScanFilter UniqueBroadcastsOnly = new ScanFilter {IgnoreRepeatBroadcasts = true};
 
       private ISet<Guid> m_advertisedServiceIsInList;
@@ -86,11 +83,6 @@ namespace nexus.protocols.ble.scan
          AdvertisedManufacturerCompanyId = value;
          return this;
       }
-
-      [ObsoleteEx(
-         Message = "IScanFilter.IgnoreRepeatBroadcasts was moved to ScanSettings.IgnoreRepeatBroadcasts",
-         TreatAsErrorFromVersion = "2.0.0",
-         RemoveInVersion = "2.1.0" )]
       public ScanFilter SetIgnoreRepeatBroadcasts( Boolean value )
       {
          IgnoreRepeatBroadcasts = value;
