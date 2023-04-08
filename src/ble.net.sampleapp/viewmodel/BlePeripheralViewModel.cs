@@ -23,7 +23,7 @@ namespace ble.net.sampleapp.viewmodel
 {
    public class BlePeripheralViewModel
       : BaseViewModel,
-        IEquatable<IBlePeripheral>
+         IEquatable<IBlePeripheral>
    {
       private Boolean m_isExpanded;
 
@@ -48,14 +48,25 @@ namespace ble.net.sampleapp.viewmodel
       const int INDEX_GYROSCOPE_Y = 14;
       const int INDEX_GYROSCOPE_Z = 16;
 
-      private  Guid _batteryServiceKey = new Guid("0000180c-0000-1000-8000-00805f9b34fb");//"180F";
+      private Guid _batteryServiceKey = new Guid("0000180c-0000-1000-8000-00805f9b34fb"); //"180F";
 
       const int INDEX_BATTERY = 18;
+
+
+
+      private string GetSensorName(string deviceName)
+      {
+         if (deviceName.StartsWith("RHB"))
+         {
+            return deviceName.Substring(3);
+         }
+         return deviceName;
+      }
 
       private void InterpretMessage()
       {
          //
-         _sensorId = Model.Advertisement.DeviceName;
+         _sensorId = GetSensorName(Model.Advertisement.DeviceName);
          //Log.Debug($"entering InterpretMessage for device: '{_sensorId}'");
          var messages = Model.Advertisement.RawData;
          try
@@ -109,6 +120,7 @@ namespace ble.net.sampleapp.viewmodel
          ConnectToDeviceCommand = new Command( async () => { await onSelectDevice( this ); } );
       }
 
+      public string RefreshRate => $"{LastPing} - {MsSinceLastPing}";
 
       public DateTime LastPing { get; set; }
 

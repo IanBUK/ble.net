@@ -92,10 +92,7 @@
                 VerticalOptions="FillAndExpand"
                 HorizontalOptions="FillAndExpand">
          <ListView.SeparatorVisibility>
-            <OnPlatform x:TypeArguments="SeparatorVisibility"
-                        Android="None"
-                        iOS="Default"
-                        WinPhone="Default" />
+            <OnPlatform x:TypeArguments="SeparatorVisibility" Android="None" iOS="Default" WinPhone="Default" />
          </ListView.SeparatorVisibility>
          <ListView.ItemTemplate>
             <DataTemplate>
@@ -128,61 +125,80 @@
                         </StackLayout>
                      </StackLayout>-->
 
-                     <Grid RowSpacing="5">
+                     <Grid RowSpacing="1">
                         <Grid.ColumnDefinitions>
-                           <ColumnDefinition Width="Auto" />
-                           <ColumnDefinition Width="200" />
-                           <ColumnDefinition Width="Auto" />
-                           <ColumnDefinition Width="200" />
-                           <ColumnDefinition Width="Auto" />
-                           <ColumnDefinition Width="Auto" />
-                           <ColumnDefinition Width="Auto" />
-                           <ColumnDefinition Width="Auto" />
-                           <ColumnDefinition Width="*" />
+                           <ColumnDefinition Width="50" />
+                           <ColumnDefinition Width="100" />
+                           <ColumnDefinition Width="50" />
+                           <ColumnDefinition Width="120" />
+                           <ColumnDefinition Width="50" />
+                           <ColumnDefinition Width="50" />
+                           <ColumnDefinition Width="70" />
+                           <ColumnDefinition Width="150" />
+                           <ColumnDefinition Width="50" />
+                           <ColumnDefinition Width="150" />
+                           <ColumnDefinition Width="50" />
+                           <ColumnDefinition Width="150" />
                         </Grid.ColumnDefinitions>
                         <Grid.RowDefinitions>
                            <RowDefinition Height="Auto" />
-                           <RowDefinition Height="Auto" />
-                           <RowDefinition Height="Auto" />
-                           <RowDefinition Height="Auto" />
-                           <RowDefinition Height="Auto" />
-                           <RowDefinition Height="Auto" />
+
                         </Grid.RowDefinitions>
 
-                        <Label Grid.Column="0" Grid.Row="0" Text="Address / Name" FontAttributes="Bold" />
-                        <Label Grid.Column="2" Grid.Row="0" Text="RSSI / Tx" FontAttributes="Bold" />
+                        <Label Grid.Column="0" Grid.Row="0" Text="Sensor ID" FontAttributes="Bold" />
+                        <Label Grid.Column="1" Grid.Row="0" Text="{Binding SensorId}" />
 
-                        <Label Grid.Column="0" Grid.Row="1" Text="Last Ping" FontAttributes="Bold" />
-                        <Label Grid.Column="2" Grid.Row="1" Text="ms Between Pings" FontAttributes="Bold" />
+                        <Label Grid.Column="2" Grid.Row="0" Text="Refresh" FontAttributes="Bold" />
+                        <Label Grid.Column="3" Grid.Row="0" Text="{Binding RefreshRate}" />
 
-                        <Label Grid.Column="0" Grid.Row="2" Text="Sensor ID" FontAttributes="Bold" />
-                        <Label Grid.Column="2" Grid.Row="2" Text="Battery" FontAttributes="Bold" />
+                        <Label Grid.Column="4" Grid.Row="0" Text="Battery" FontAttributes="Bold" />
+                        <Label Grid.Column="5" Grid.Row="0" Text="{Binding BatteryLevel}" />
 
-                        <Label Grid.Column="0" Grid.Row="3" Text="Orientation" FontAttributes="Bold" />
+                        <Label Grid.Column="6" Grid.Row="0" Text="Orientation" FontAttributes="Bold" />
+                        <Label Grid.Column="7" Grid.Row="0" Text="{Binding OrientationSummary}" />
 
-                        <Label Grid.Column="0" Grid.Row="4" Text="Accelerometer" FontAttributes="Bold" />
-                        <Label Grid.Column="2" Grid.Row="4" Text="Gyroscope" FontAttributes="Bold" />
+                        <Label Grid.Column="8" Grid.Row="0" Text="Accel." FontAttributes="Bold" />
+                        <Label Grid.Column="9" Grid.Row="0" Text="{Binding AccelerometerSummary}" />
 
-                        <Label Grid.Column="1" Grid.Row="0" Text="{Binding AddressAndName}" />
-                        <Label Grid.Column="3" Grid.Row="0" Text="{Binding Signal}" />
+                        <Label Grid.Column="10" Grid.Row="0" Text="Gyro." FontAttributes="Bold" />
+                        <Label Grid.Column="11" Grid.Row="0" Text="{Binding GyroScopeSummary}" />
 
-                        <Label Grid.Column="1" Grid.Row="1" Text="{Binding LastPing}" />
-                        <Label Grid.Column="3" Grid.Row="1" Text="{Binding MsSinceLastPing}" />
 
-                        <Label Grid.Column="1" Grid.Row="2" Text="{Binding SensorId}" />
-                        <Label Grid.Column="3" Grid.Row="2" Text="{Binding BatteryLevel}" />
 
-                        <Label Grid.Column="1" Grid.Row="3" Text="{Binding OrientationSummary}" />
 
-                        <Label Grid.Column="1" Grid.Row="4" Text="{Binding AccelerometerSummary}" />
-                        <Label Grid.Column="3" Grid.Row="4" Text="{Binding GyroScopeSummary}" />
+                        <!-- <Label Grid.Column="0" Grid.Row="0" Text="Address / Name" FontAttributes="Bold" /> -->
+                        <!-- <Label Grid.Column="1" Grid.Row="0" Text="{Binding AddressAndName}" /> -->
+                        <!-- -->
+                        <!-- <Label Grid.Column="2" Grid.Row="0" Text="RSSI / Tx" FontAttributes="Bold" /> -->
+                        <!-- <Label Grid.Column="3" Grid.Row="0" Text="{Binding Signal}" /> -->
+                        <!-- -->
+                        <!-- <Label Grid.Column="4" Grid.Row="0" Text="Last Ping" FontAttributes="Bold" /> -->
+                        <!-- <Label Grid.Column="5" Grid.Row="0" Text="{Binding LastPing}" /> -->
+                        <!-- -->
+                        <!-- <Label Grid.Column="6" Grid.Row="0" Text="ms Between Pings" FontAttributes="Bold" /> -->
+                        <!-- <Label Grid.Column="7" Grid.Row="0" Text="{Binding MsSinceLastPing}" /> -->
+                        <!-- -->
+                        <!-- <Label Grid.Column="0" Grid.Row="1" Text="Sensor ID" FontAttributes="Bold" /> -->
+                        <!-- <Label Grid.Column="1" Grid.Row="1" Text="{Binding SensorId}" /> -->
+                        <!-- -->
+                        <!-- <Label Grid.Column="2" Grid.Row="1" Text="Battery" FontAttributes="Bold" /> -->
+                        <!-- <Label Grid.Column="3" Grid.Row="1" Text="{Binding BatteryLevel}" /> -->
+                        <!-- -->
+                        <!-- <Label Grid.Column="4" Grid.Row="1" Text="Orientation" FontAttributes="Bold" /> -->
+                        <!-- <Label Grid.Column="5" Grid.Row="1" Text="{Binding OrientationSummary}" /> -->
+                        <!-- -->
+                        <!-- <Label Grid.Column="6" Grid.Row="1" Text="Accelerometer" FontAttributes="Bold" /> -->
+                        <!-- <Label Grid.Column="7" Grid.Row="1" Text="{Binding AccelerometerSummary}" /> -->
+                        <!-- -->
+                        <!-- <Label Grid.Column="8" Grid.Row="1" Text="Gyroscope" FontAttributes="Bold" /> -->
+                        <!-- <Label Grid.Column="9" Grid.Row="1" Text="{Binding GyroScopeSummary}" /> -->
 
-                        <StackLayout Grid.Row="5"
+ <!--                       <StackLayout Grid.Row="5"
                                      Grid.Column="8"
                                      Grid.ColumnSpan="1"
                                      Orientation="Horizontal"
                                      HorizontalOptions="EndAndExpand">
-                           <!-- TODO: implement the remember switch -->
+
                            <Label IsVisible="false"
                                   Text="Remember Device"
                                   HorizontalOptions="Start"
@@ -199,7 +215,7 @@
                                  <OnPlatform x:TypeArguments="Color" WinPhone="DarkOrange" />
                               </Button.TextColor>
                            </Button>
-                        </StackLayout>
+                        </StackLayout>-->
                      </Grid>
                   </Frame>
                </ViewCell>
