@@ -93,6 +93,15 @@ namespace ble.net.sampleapp.viewmodel
             //       Mode = ScanMode.LowPower,
             //       Filter = new ScanFilter().SetAdvertisedManufacturerCompanyId( 224 /*Google*/ )
             //    },
+            new ScanSettings()
+            {
+               Mode = ScanMode.HighPower,
+               Filter = new ScanFilter()
+               {
+                  AdvertisedManufacturerCompanyId = 0x2405,
+                  IgnoreRepeatBroadcasts = false
+               }
+            },
             peripheral =>
             {
                //Log.Trace($"Into peripheral =>");
@@ -100,6 +109,8 @@ namespace ble.net.sampleapp.viewmodel
                Device.BeginInvokeOnMainThread(
                   () =>
                   {
+                     var sw = new Stopwatch();
+                     sw.Start();
                      try
                      {
                         if (!IsRhbSensor(peripheral)) return;
@@ -119,6 +130,9 @@ namespace ble.net.sampleapp.viewmodel
                      {
                         Log.Trace($"exception in Device.BeginEvokeOnMainThread: {e.Message}");
                      }
+                     sw.Stop();
+                     Debug.WriteLine($"time to process a ping: {sw.ElapsedMilliseconds}ms");
+
                   } );
             },
             m_scanCancel.Token );

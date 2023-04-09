@@ -75,16 +75,16 @@ namespace ble.net.sampleapp.viewmodel
          {
             if (!Model.Advertisement.ManufacturerSpecificData.Any())
             {
-               Debug.WriteLine($"No advert for sensor '{_sensorId}'");
-               Log.Trace($"No advert for sensor '{_sensorId}'");
+               //Debug.WriteLine($"No advert for sensor '{_sensorId}'");
+               //Log.Trace($"No advert for sensor '{_sensorId}'");
             }
             else
             {
                var item = Model.Advertisement.ManufacturerSpecificData.First();
                var itemAsString =  System.Text.Encoding.UTF8.GetString(item.Data);
 
-               Debug.WriteLine(itemAsString);
-               Log.Trace(itemAsString);
+               //Debug.WriteLine(itemAsString);
+               //Log.Trace(itemAsString);
                // inflate item.Data
                _accel.X = GetDoubleFromByteArray(item.Data,  INDEX_ACCELERATION_X);
                _accel.Y = GetDoubleFromByteArray(item.Data,  INDEX_ACCELERATION_Y);
