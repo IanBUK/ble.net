@@ -30,6 +30,8 @@ namespace ble.net.sampleapp.viewmodel
 
       private Random _random = new Random(DateTime.Now.Millisecond);
       private string _sensorId = string.Empty;
+      private double _totalMs = 0;
+      private double _totalPings = 0;
       private Vector3D _gyro = new Vector3D();
       private Vector3D _accel = new Vector3D();
       private Vector3D _mag = new Vector3D();
@@ -120,7 +122,11 @@ namespace ble.net.sampleapp.viewmodel
          ConnectToDeviceCommand = new Command( async () => { await onSelectDevice( this ); } );
       }
 
-      public string RefreshRate => $"{LastPing} - {MsSinceLastPing}";
+      //public string RefreshRate => $"{LastPing.ToShortTimeString()} - {MsSinceLastPing}";
+      public string RefreshRate => $"{MsSinceLastPing}ms";
+
+      public string AverageMs => _msSinceLastPing.ToString("F") + "   avg.(" +(_totalMs / _totalPings).ToString("F")+")";
+
 
       public DateTime LastPing { get; set; }
 
@@ -308,6 +314,8 @@ namespace ble.net.sampleapp.viewmodel
 
          var now = DateTime.Now;
          _msSinceLastPing = now.Subtract(LastPing).TotalMilliseconds;
+         _totalMs += _msSinceLastPing;
+         _totalPings++;
          LastPing = now;
 
          InterpretMessage();
@@ -330,7 +338,7 @@ namespace ble.net.sampleapp.viewmodel
          RaisePropertyChanged(nameof(BatteryLevel));
          RaisePropertyChanged(nameof(MsSinceLastPing));
          RaisePropertyChanged(nameof(LastPing));
-
+         Log.Trace(($"SensorID: {SensorId}. ms Since last update: {MsSinceLastPing}"));
 
          RaisePropertyChanged(nameof(AccelerometerSummary));
          RaisePropertyChanged(nameof(GyroScopeSummary));
@@ -341,7 +349,7 @@ namespace ble.net.sampleapp.viewmodel
          RaisePropertyChanged(nameof(Magnetometer));
          RaisePropertyChanged(nameof(Orientation));
          RaisePropertyChanged(nameof(SensorId));
-
+         RaisePropertyChanged((nameof(AverageMs)));
 
       }
    }
