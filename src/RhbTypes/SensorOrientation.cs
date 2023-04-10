@@ -1,9 +1,9 @@
 namespace RhbTypes
 {
-   public class Orientation
+   public class SensorOrientation
    {
       // based on info in: https://howthingsfly.si.edu/flight-dynamics/roll-pitch-and-yaw
-      public Orientation()
+      public SensorOrientation()
       {
          Pitch = 0.0F;
          Roll = 0.0F;

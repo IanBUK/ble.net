@@ -35,7 +35,7 @@ namespace ble.net.sampleapp.viewmodel
       private Vector3D _gyro = new Vector3D();
       private Vector3D _accel = new Vector3D();
       private Vector3D _mag = new Vector3D();
-      private Orientation _orientation = new Orientation();
+      private SensorOrientation _sensorOrientation = new SensorOrientation();
       private int _batteryLevel = 0;
       private double _msSinceLastPing = 0.0;
       const int INDEX_ORIENTATION_PITCH = 0;
@@ -94,9 +94,9 @@ namespace ble.net.sampleapp.viewmodel
                _gyro.Y = GetDoubleFromByteArray(item.Data,  INDEX_GYROSCOPE_Y);
                _gyro.Z = GetDoubleFromByteArray(item.Data,  INDEX_GYROSCOPE_Z);
 
-               _orientation.Pitch = GetDoubleFromByteArray(item.Data,  INDEX_ORIENTATION_PITCH);
-               _orientation.Roll = GetDoubleFromByteArray(item.Data,  INDEX_ORIENTATION_ROLL);
-               _orientation.Yaw = GetDoubleFromByteArray(item.Data,  INDEX_ORIENTATION_YAW);
+               _sensorOrientation.Pitch = GetDoubleFromByteArray(item.Data,  INDEX_ORIENTATION_PITCH);
+               _sensorOrientation.Roll = GetDoubleFromByteArray(item.Data,  INDEX_ORIENTATION_ROLL);
+               _sensorOrientation.Yaw = GetDoubleFromByteArray(item.Data,  INDEX_ORIENTATION_YAW);
 
                _batteryLevel = (int) item.Data[INDEX_BATTERY];
                Log.Trace($"Sensor seen: {_sensorId}");
@@ -156,7 +156,7 @@ namespace ble.net.sampleapp.viewmodel
       public string MagnetometerSummary => _mag.ToString();
 
       public string GyroScopeSummary => _gyro.ToString();
-      public string OrientationSummary => _orientation.ToString();
+      public string OrientationSummary => _sensorOrientation.ToString();
 
 
       public Vector3D Accelerometer => _accel;
@@ -164,7 +164,7 @@ namespace ble.net.sampleapp.viewmodel
       public Vector3D Magnetometer => _mag;
 
       public Vector3D GyroScope => _gyro;
-      public Orientation Orientation => _orientation;
+      public SensorOrientation SensorOrientation => _sensorOrientation;
 
 
       public string SensorId => _sensorId;
@@ -347,7 +347,7 @@ namespace ble.net.sampleapp.viewmodel
          RaisePropertyChanged(nameof(Accelerometer));
          RaisePropertyChanged(nameof(GyroScope));
          RaisePropertyChanged(nameof(Magnetometer));
-         RaisePropertyChanged(nameof(Orientation));
+         RaisePropertyChanged(nameof(SensorOrientation));
          RaisePropertyChanged(nameof(SensorId));
          RaisePropertyChanged((nameof(AverageMs)));
 
